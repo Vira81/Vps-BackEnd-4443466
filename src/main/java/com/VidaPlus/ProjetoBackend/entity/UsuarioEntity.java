@@ -1,0 +1,68 @@
+package com.VidaPlus.ProjetoBackend.entity;
+
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.beans.BeanUtils;
+
+import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
+import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode (of = "id")
+@Table(name ="vps_usuario")
+@Builder
+/**
+ * Responsavel pelo login
+ * TODO: Criar um campo para a situação do usuario. (Ativo, Inativo, Pendente)
+ * TODO: Ativação do login por email
+ */
+
+public class UsuarioEntity {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+
+	@Column(nullable = false, unique = true)
+	private String email;
+
+	@Column(nullable = false)
+	private String senhaHash;
+
+	@Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PerfilUsuario perfil;
+
+	@Column
+    private LocalDateTime ultimoAcesso;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime dataCriacao;
+
+	// construtor para converter DTO
+	public UsuarioEntity(UsuarioDto usuario) {
+		BeanUtils.copyProperties(usuario, this);
+	}
+
+
+}

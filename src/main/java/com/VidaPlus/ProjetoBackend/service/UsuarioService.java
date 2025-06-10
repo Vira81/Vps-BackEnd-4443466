@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
+import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -28,7 +29,7 @@ public class UsuarioService {
 
 	/**
 	 * Criação do usuario
-	 * Um usuario comum só pode criar logins do tipo PACIENTE 
+	 * Um usuario comum só pode criar logins do tipo PACIENTE e PENDENTE
 	 * @param dto
 	 * @return Usuario Salvo
 	 */
@@ -48,6 +49,7 @@ public class UsuarioService {
 		UsuarioEntity usuario = UsuarioEntity.builder().email(dto.getEmail())
 				.senhaHash(passwordEncoder.encode(dto.getSenhaHash()))
 				.perfil(dto.getPerfil() != null ? dto.getPerfil() : PerfilUsuario.PACIENTE)
+				.status(dto.getStatus() != null ? dto.getStatus() : StatusUsuario.PENDENTE)
 				.dataCriacao(LocalDateTime.now()).build();
 
 		UsuarioEntity salvo = usuarioRepository.save(usuario);

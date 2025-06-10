@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
+import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,8 @@ public class UsuarioDto {
 	private String senhaHash;
 
 	private PerfilUsuario perfil;
+	
+	private StatusUsuario status;
 
 	private LocalDateTime ultimoAcesso;
 

@@ -7,7 +7,6 @@ import org.springframework.beans.BeanUtils;
 
 import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
-import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,8 +33,7 @@ import lombok.Setter;
 @Builder
 /**
  * Responsavel pelo login
- * OK: Criar um campo para a situação do usuario. (Ativo, Inativo, Pendente)
- * TODO: Campo adicionado, testar com json 
+ * TODO: Criar um campo para a situação do usuario. (Ativo, Inativo, Pendente)
  * TODO: Ativação do login por email
  */
 
@@ -60,10 +58,6 @@ public class UsuarioEntity {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime dataCriacao;
-    
-    @Enumerated(EnumType.STRING)
-    @Column//(nullable = false)
-    private StatusUsuario status;
 
 	// construtor para converter DTO
 	public UsuarioEntity(UsuarioDto usuario) {

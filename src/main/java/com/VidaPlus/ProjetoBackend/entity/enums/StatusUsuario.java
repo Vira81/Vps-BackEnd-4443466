@@ -9,6 +9,7 @@ package com.VidaPlus.ProjetoBackend.entity.enums;
 public enum StatusUsuario {
 	ATIVO,
 	INATIVO,
-	PENDENTE
+	PENDENTE,
+	VALIDADO
 
 }

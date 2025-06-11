@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.UsuarioCadastroDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
+import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
@@ -134,6 +135,7 @@ public class UsuarioService {
 				.senhaHash(passwordEncoder.encode(dto.getSenha()))
 				.perfil(PerfilUsuario.PACIENTE)  
 			    .status(StatusUsuario.PENDENTE)
+			    .pessoa(new PessoaEntity())
 				.build();
 
 		return usuarioRepository.save(novoUsuario);

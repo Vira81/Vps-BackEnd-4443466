@@ -1,14 +1,22 @@
 package com.VidaPlus.ProjetoBackend.controller;
 
-import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
-import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
-import com.VidaPlus.ProjetoBackend.service.UsuarioService;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.VidaPlus.ProjetoBackend.dto.UsuarioCadastroDto;
+import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
+import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
+import com.VidaPlus.ProjetoBackend.service.UsuarioService;
 
 
 @RestController
@@ -17,6 +25,27 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+    
+    /**
+     * Cadastra um novo usuario pelo
+     * http://localhost:8080/usuarios/cadastro
+     * 
+     */
+    @PostMapping("/cadastro")
+    public ResponseEntity<UsuarioEntity> cadastrar(@RequestBody UsuarioCadastroDto dto) {
+        UsuarioEntity novoUsuario = usuarioService.cadastrarNovoUsuario(dto);
+        return ResponseEntity.ok(novoUsuario);
+    }
+    
+    /**
+     * Teste de login e token
+     * Token gerado e validado com sucesso
+     * http://localhost:8080/usuarios/protegido
+     */
+    @GetMapping("/protegido")
+    public ResponseEntity<String> testeProtegido() {
+        return ResponseEntity.ok("Acesso autorizado! Token Validado!");
+    }
 
     /**
      * Cria um novo usuário.

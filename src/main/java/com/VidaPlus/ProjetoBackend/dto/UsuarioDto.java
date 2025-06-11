@@ -28,7 +28,7 @@ public class UsuarioDto {
 	private String senhaHash;
 
 	private PerfilUsuario perfil;
-	
+
 	private StatusUsuario status;
 
 	private LocalDateTime ultimoAcesso;

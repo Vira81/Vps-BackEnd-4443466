@@ -3,12 +3,15 @@ package com.VidaPlus.ProjetoBackend.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.VidaPlus.ProjetoBackend.dto.UsuarioCadastroDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
@@ -24,12 +27,10 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioService {
 	private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 
-	private final UsuarioRepository usuarioRepository;
-	private final BCryptPasswordEncoder passwordEncoder;
-
 	/**
-	 * Criação do usuario
-	 * Um usuario comum só pode criar logins do tipo PACIENTE e PENDENTE
+	 * Criação do usuario Um usuario comum só pode criar logins do tipo PACIENTE e
+	 * PENDENTE
+	 * 
 	 * @param dto
 	 * @return Usuario Salvo
 	 */
@@ -94,17 +95,17 @@ public class UsuarioService {
 	}
 
 	/**
-	 * Deletar usuario por Id
-	 * TODO: Realizar mais testes 
+	 * Deletar usuario por Id TODO: Realizar mais testes
+	 * 
 	 * @param id
 	 */
 	public void deletar(Long id) {
-	    if (!usuarioRepository.existsById(id)) {
-	        throw new RuntimeException("Usuário com ID " + id + " não encontrado");
-	    }
+		if (!usuarioRepository.existsById(id)) {
+			throw new RuntimeException("Usuário com ID " + id + " não encontrado");
+		}
 
-	    usuarioRepository.deleteById(id);
-	    logger.info("Usuário com ID {} foi deletado", id);
+		usuarioRepository.deleteById(id);
+		logger.info("Usuário com ID {} foi deletado", id);
 	}
 
 	// Buscar por email
@@ -117,4 +118,25 @@ public class UsuarioService {
 		usuario.setUltimoAcesso(LocalDateTime.now());
 		usuarioRepository.save(usuario);
 	}
+
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	public UsuarioEntity cadastrarNovoUsuario(UsuarioCadastroDto dto) {
+		if (usuarioRepository.existsByEmail(dto.getEmail())) {
+			throw new RuntimeException("Email já cadastrado");
+		}
+
+		UsuarioEntity novoUsuario = UsuarioEntity.builder().email(dto.getEmail())
+				.senhaHash(passwordEncoder.encode(dto.getSenha()))
+				.perfil(dto.getPerfil())
+				.status(dto.getStatus())
+				.build();
+
+		return usuarioRepository.save(novoUsuario);
+	}
+
 }

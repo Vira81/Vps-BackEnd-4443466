@@ -37,16 +37,7 @@ public class UsuarioController {
         return ResponseEntity.ok(novoUsuario);
     }
     
-    /**
-     * Teste de login e token
-     * Token gerado e validado com sucesso
-     * http://localhost:8080/usuarios/protegido
-     */
-    @GetMapping("/protegido")
-    public ResponseEntity<String> testeProtegido() {
-        return ResponseEntity.ok("Acesso autorizado! Token Validado!");
-    }
-
+    
     /**
      * Cria um novo usuário.
      */

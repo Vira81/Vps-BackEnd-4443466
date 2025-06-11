@@ -1,6 +1,8 @@
 package com.VidaPlus.ProjetoBackend.service;
 
 
+import java.time.LocalDateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.AcessDto;
 import com.VidaPlus.ProjetoBackend.dto.AuthenticationDto;
+import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
+import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 import com.VidaPlus.ProjetoBackend.security.JwtUtils;
 
 
@@ -24,7 +28,9 @@ public class AuthService {
 
 	@Autowired
 	private JwtUtils jwtUtils;
-
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+	
 	public AcessDto login(AuthenticationDto authDto) {
 	    try {
 	        UsernamePasswordAuthenticationToken userAuth =
@@ -33,7 +39,11 @@ public class AuthService {
 	        Authentication authentication = authenticationManager.authenticate(userAuth);
 
 	        UserDetailsImpl userAuthenticate = (UserDetailsImpl) authentication.getPrincipal();
+	        UsuarioEntity usuario = userAuthenticate.getUsuario();
 
+	        // Atualiza o último acesso
+	        usuario.setUltimoAcesso(LocalDateTime.now());
+	        usuarioRepository.save(usuario);
 	        String token = jwtUtils.generateTokenFromUserDetailsImpl(userAuthenticate);
 
 	        return new AcessDto(token);

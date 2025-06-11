@@ -132,8 +132,8 @@ public class UsuarioService {
 
 		UsuarioEntity novoUsuario = UsuarioEntity.builder().email(dto.getEmail())
 				.senhaHash(passwordEncoder.encode(dto.getSenha()))
-				.perfil(dto.getPerfil())
-				.status(dto.getStatus())
+				.perfil(PerfilUsuario.PACIENTE)  
+			    .status(StatusUsuario.PENDENTE)
 				.build();
 
 		return usuarioRepository.save(novoUsuario);

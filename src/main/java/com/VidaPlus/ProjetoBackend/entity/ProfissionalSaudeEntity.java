@@ -6,10 +6,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.beans.BeanUtils;
 
 import com.VidaPlus.ProjetoBackend.dto.ProfissionalSaudeDto;
-import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
+import com.VidaPlus.ProjetoBackend.entity.enums.EspecialidadeSaude;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,17 +45,17 @@ public class ProfissionalSaudeEntity {
 	@JoinColumn(name = "pessoa_id", nullable = false)
 	private PessoaEntity pessoa;
 
-	// TODO: Enum
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String especialidade;
+	private EspecialidadeSaude especialidade;
 
 	@Column
 	private String crm;
-	
+
 	@CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime dataCriacaoProfissional;
-	
+	@Column(nullable = false, updatable = false)
+	private LocalDateTime dataCriacaoProfissional;
+
 	@Column
 	private String criadoPor;
 

@@ -2,6 +2,7 @@ package com.VidaPlus.ProjetoBackend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,7 +22,12 @@ public class PessoaController {
     @Autowired
     private PessoaService pessoaService;
 
+    /**
+     * O usuario somente pode alterar os proprios dados
+     * TODO: Fazer isso tambem para Usuario (login)
+     */
     @PutMapping("/{id}")
+    @PreAuthorize("@usuarioService.usuarioPodeAlterar(#id)")
     public ResponseEntity<PessoaEntity> atualizarPessoa(
             @PathVariable Long id,
             @RequestBody PessoaDto dto) {

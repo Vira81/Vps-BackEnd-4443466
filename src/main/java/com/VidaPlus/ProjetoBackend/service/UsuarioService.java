@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
+import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -31,10 +34,9 @@ public class UsuarioService {
 	/**
 	 * Criação do usuario Um usuario comum só pode criar logins do tipo PACIENTE e
 	 * PENDENTE
-	 * 
-	 * @param dto
-	 * @return Usuario Salvo
-	 */
+	 * TODO: criar(dto) não está sendo usado
+	 *
+	 **/
 	public UsuarioEntity criar(UsuarioDto dto) {
 		logger.info("Tentando criar usuário com e-mail: {}", dto.getEmail());
 
@@ -125,6 +127,9 @@ public class UsuarioService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+    private PessoaRepository pessoaRepository;
 
 	public UsuarioEntity cadastrarNovoUsuario(UsuarioCadastroDto dto) {
 		if (usuarioRepository.existsByEmail(dto.getEmail())) {
@@ -140,5 +145,13 @@ public class UsuarioService {
 
 		return usuarioRepository.save(novoUsuario);
 	}
+	public boolean usuarioPodeAlterar(Long pessoaId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String emailLogado = auth.getName();
+
+        return pessoaRepository.findById(pessoaId)
+                .map(pessoa -> pessoa.getUsuario().getEmail().equals(emailLogado))
+                .orElse(false);
+    }
 
 }

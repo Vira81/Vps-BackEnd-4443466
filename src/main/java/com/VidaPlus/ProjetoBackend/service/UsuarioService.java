@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.UsuarioCadastroDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
+import com.VidaPlus.ProjetoBackend.dto.UsuarioPerfilDto;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
@@ -153,5 +155,14 @@ public class UsuarioService {
                 .map(pessoa -> pessoa.getUsuario().getEmail().equals(emailLogado))
                 .orElse(false);
     }
+
+	public ResponseEntity<?> atualizarPerfil(Long id, UsuarioPerfilDto dto) {
+	    UsuarioEntity usuario = usuarioRepository.findById(id)
+	        .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+	    usuario.setPerfil(dto.getPerfil());
+	    usuarioRepository.save(usuario);
+
+	    return ResponseEntity.ok("Perfil atualizado com sucesso");
+	}
 
 }

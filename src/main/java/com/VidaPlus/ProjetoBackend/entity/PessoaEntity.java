@@ -59,6 +59,9 @@ public class PessoaEntity {
 	@JsonIgnore //evita loop de JSONs
 	private UsuarioEntity usuario;
 	
+	@OneToOne(mappedBy = "pessoa")
+	@JsonIgnore
+	private ProfissionalSaudeEntity profissionalSaude;
 
 	// construtor para converter DTO
 	public PessoaEntity(PessoaDto usuario) {

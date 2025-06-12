@@ -24,6 +24,9 @@ public class SecurityConfig {
     private AuthEntryPointJwt unauthorizedHandler;
 
     @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+    
+    @Autowired
     private JwtUtils jwtUtils;
 
     @Autowired
@@ -49,7 +52,8 @@ public class SecurityConfig {
         http
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
-            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+            .exceptionHandling(ex -> ex
+                    .accessDeniedHandler(customAccessDeniedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()

@@ -60,7 +60,7 @@ public class ConsultaEntity {
 	private Double valor;
 	
 	@Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column//(nullable = false)
 	private ConsultaStatus statusConsulta;
 	
 	@ManyToOne(optional = false)

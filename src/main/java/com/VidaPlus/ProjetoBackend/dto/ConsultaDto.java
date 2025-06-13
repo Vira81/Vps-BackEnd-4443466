@@ -1,7 +1,6 @@
 package com.VidaPlus.ProjetoBackend.dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import lombok.AllArgsConstructor;
@@ -24,8 +23,6 @@ public class ConsultaDto {
 	private LocalDate dia;
 	
 	private LocalTime hora;
-	
-	private LocalDateTime dataCriacaoConsulta;
 	
 	private Double valor;
 }

@@ -3,9 +3,9 @@ package com.VidaPlus.ProjetoBackend.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
+import com.VidaPlus.ProjetoBackend.entity.HospitalEntity;
 
 @Repository
-public interface ConsultaRepository extends JpaRepository<ConsultaEntity, Long> {
+public interface HospitalRepository extends JpaRepository<HospitalEntity, Long> {
 
 }

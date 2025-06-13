@@ -1,6 +1,7 @@
 package com.VidaPlus.ProjetoBackend.entity;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.beans.BeanUtils;

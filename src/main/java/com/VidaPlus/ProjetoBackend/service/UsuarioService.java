@@ -22,6 +22,7 @@ import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
+import com.VidaPlus.ProjetoBackend.exception.EmailJaCadastradoException;
 import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 
@@ -135,7 +136,7 @@ public class UsuarioService {
 
 	public UsuarioEntity cadastrarNovoUsuario(UsuarioCadastroDto dto) {
 		if (usuarioRepository.existsByEmail(dto.getEmail())) {
-			throw new RuntimeException("Email já cadastrado");
+			throw new EmailJaCadastradoException("O e-mail informado já está cadastrado.");
 		}
 
 		UsuarioEntity novoUsuario = UsuarioEntity.builder().email(dto.getEmail())

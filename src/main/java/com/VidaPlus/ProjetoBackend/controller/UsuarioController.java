@@ -25,6 +25,8 @@ import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 import com.VidaPlus.ProjetoBackend.service.UsuarioService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
@@ -40,10 +42,12 @@ public class UsuarioController {
 	 * 
 	 */
 	@PostMapping("/cadastro")
-	public ResponseEntity<UsuarioEntity> cadastrar(@RequestBody UsuarioCadastroDto dto) {
+	public ResponseEntity<UsuarioEntity> cadastrar(@RequestBody @Valid UsuarioCadastroDto dto) {
 		UsuarioEntity novoUsuario = usuarioService.cadastrarNovoUsuario(dto);
 		return ResponseEntity.ok(novoUsuario);
 	}
+	
+	
 
 	/**
 	 * Cria um novo usuário.

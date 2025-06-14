@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,7 +50,7 @@ public class AuthService {
 	        return new AcessDto(token);
 	    } catch (BadCredentialsException e) {
 	        logger.warn("Credenciais inválidas para o usuário: {}", authDto.getUsername());
-	        throw new RuntimeException("Login ou senha inválidos");
+	        throw new AccessDeniedException("Login ou senha inválidos");
 	    } catch (Exception e) {
 	        logger.error("Erro ao autenticar: {}", authDto.getUsername(), e);
 	        throw new RuntimeException("Erro interno na autenticação");

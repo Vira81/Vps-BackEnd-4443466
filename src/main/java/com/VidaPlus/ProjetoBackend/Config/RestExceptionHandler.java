@@ -15,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.VidaPlus.ProjetoBackend.exception.AlteracaoIndevida;
 import com.VidaPlus.ProjetoBackend.exception.EmailJaCadastradoException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
@@ -27,6 +28,14 @@ public class RestExceptionHandler {
  * Ja criada: Erros de cadastro, email/senha invalido, ENUM
  * 
  */
+	//Se um usuario tentar alterar os dados pessoais de outra pessoa
+	// TODO: a mensagem ainda nao mudou 403 Generico
+	@ExceptionHandler(AlteracaoIndevida.class)
+    public ResponseEntity<ApiError> handleAlteracaoIndevida(AlteracaoIndevida ex) {
+        ApiError apiError = criarErro(HttpStatus.FORBIDDEN, "Acesso negado: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
+    }
+	
 	@ExceptionHandler(EmailJaCadastradoException.class)
 	public ResponseEntity<ApiError> handleEmailJaCadastrado(EmailJaCadastradoException ex) {
 	    ApiError apiError = criarErro(HttpStatus.CONFLICT, ex.getMessage());

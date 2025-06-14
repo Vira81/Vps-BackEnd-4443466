@@ -22,6 +22,7 @@ import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
+import com.VidaPlus.ProjetoBackend.exception.AlteracaoIndevida;
 import com.VidaPlus.ProjetoBackend.exception.EmailJaCadastradoException;
 import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
@@ -151,7 +152,7 @@ public class UsuarioService {
 		String emailLogado = auth.getName();
 
 		return pessoaRepository.findById(pessoaId).map(pessoa -> pessoa.getUsuario().getEmail().equals(emailLogado))
-				.orElse(false);
+				.orElseThrow(() -> new AlteracaoIndevida("Somente é possivel alterar os seus dados"));
 	}
 
 	public ResponseEntity<?> atualizarPerfil(Long id, UsuarioPerfilDto dto) {

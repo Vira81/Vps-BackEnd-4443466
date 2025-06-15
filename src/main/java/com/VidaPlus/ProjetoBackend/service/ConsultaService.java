@@ -20,7 +20,6 @@ import com.VidaPlus.ProjetoBackend.repository.ConsultaRepository;
 import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
 import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
 import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
@@ -39,6 +38,9 @@ public class ConsultaService {
 	@Autowired
 	private HospitalRepository hospitalRepository;
 
+	@Autowired
+	private ProntuarioService prontuarioService;
+	
 	@Transactional
 	public ConsultaEntity criarConsulta(ConsultaDto dto) {
 
@@ -80,6 +82,11 @@ public class ConsultaService {
         if (!consulta.getProfissional().getUsuario().getEmail().equals(emailLogado)) {
             throw new AccessDeniedException("Você não tem permissão para alterar esta consulta.");
         }
+        
+        // Não pode alterar uma consulta já realizada
+        if (consulta.getStatusConsulta() == ConsultaStatus.REALIZADA) {
+            throw new IllegalStateException("Esta consulta já foi finalizada.");
+        }
 
         consulta.setStatusConsulta(ConsultaStatus.REALIZADA);
         consulta.setDataRealizada(LocalDateTime.now());
@@ -88,6 +95,6 @@ public class ConsultaService {
 
         consultaRepository.save(consulta);
 
-        // gerarProntuario(consulta);
+        prontuarioService.gerarProntuario(consulta);
     }
 }

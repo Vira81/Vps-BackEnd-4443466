@@ -113,7 +113,7 @@ public class DataInitializer {
             // "PUT" dos dados pessoais
             if (pessoaOptional3.isPresent()) {
                 PessoaEntity pessoa = pessoaOptional3.get();
-                pessoa.setNome("Paciente");
+                pessoa.setNome("Paciente Saude");
                 pessoa.setCpf("123.456.789-00");
                 pessoa.setDataNascimento(LocalDate.of(1990, 5, 20));
                 pessoa.setTelefone("(11) 99999-0000");

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
+import com.VidaPlus.ProjetoBackend.dto.RealizarConsultaDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
@@ -22,6 +23,8 @@ import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
 import com.VidaPlus.ProjetoBackend.service.ConsultaService;
 import com.VidaPlus.ProjetoBackend.service.UsuarioLogadoService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/consulta")
@@ -40,6 +43,12 @@ public class ConsultaController {
 	@Autowired
 	private ProfissionalSaudeRepository profissionalSaudeRepository;
 
+	/**
+	 * Somente o admin pode ver todas as consultas
+	 * TODO: criar um GET exclusivo para o profissional e o paciente
+	 * 
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
 	public ResponseEntity<ConsultaEntity> buscarPorId(@PathVariable Long id) {
 	    ConsultaEntity consulta = consultaService.buscarPorId(id);
@@ -86,5 +95,19 @@ public class ConsultaController {
 		ConsultaEntity consultaCriada = consultaService.criarConsulta(dto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(consultaCriada);
 	}
+	
+	/**
+	 * Atendimento da consulta
+	 */
+	@PostMapping("/{consultaId}/atender")
+	@PreAuthorize("hasRole('PROFISSIONAL')")
+    public ResponseEntity<?> atenderConsulta(
+        @PathVariable Long consultaId,
+        @RequestBody @Valid RealizarConsultaDto dto
+    ) {
+        consultaService.realizarConsulta(consultaId, dto);
+        return ResponseEntity.ok("Consulta realizada.");
+    }
+	
 
 }

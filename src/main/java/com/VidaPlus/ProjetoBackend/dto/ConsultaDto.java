@@ -3,6 +3,8 @@ package com.VidaPlus.ProjetoBackend.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.VidaPlus.ProjetoBackend.entity.enums.ConsultaStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,4 +27,6 @@ public class ConsultaDto {
 	private LocalTime hora;
 	
 	private Double valor;
+	
+	private ConsultaStatus statusConsulta; 
 }

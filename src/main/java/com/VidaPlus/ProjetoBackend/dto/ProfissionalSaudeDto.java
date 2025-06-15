@@ -14,5 +14,4 @@ public class ProfissionalSaudeDto {
     private EspecialidadeSaude especialidade;
     private String crm;
     private LocalDateTime dataCriacaoProfissional;
-    private String criadoPor;
 }

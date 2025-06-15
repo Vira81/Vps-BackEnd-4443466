@@ -1,14 +1,25 @@
 package com.VidaPlus.ProjetoBackend.service;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
-import com.VidaPlus.ProjetoBackend.entity.*;
+import com.VidaPlus.ProjetoBackend.dto.RealizarConsultaDto;
+import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
+import com.VidaPlus.ProjetoBackend.entity.HospitalEntity;
+import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
+import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
+import com.VidaPlus.ProjetoBackend.entity.enums.ConsultaStatus;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
-import com.VidaPlus.ProjetoBackend.repository.*;
+import com.VidaPlus.ProjetoBackend.exception.EmailJaCadastradoException;
+import com.VidaPlus.ProjetoBackend.repository.ConsultaRepository;
+import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
+import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
+import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -47,7 +58,8 @@ public class ConsultaService {
 
 		// Cria a consulta
 		ConsultaEntity novaConsulta = ConsultaEntity.builder().profissional(profissional).paciente(paciente)
-				.hospital(hospital).dia(dto.getDia()).hora(dto.getHora()).valor(dto.getValor()).build();
+				.hospital(hospital).dia(dto.getDia()).hora(dto.getHora())
+				.statusConsulta(ConsultaStatus.AGENDADA).valor(dto.getValor()).build();
 
 		return consultaRepository.save(novaConsulta);
 	}
@@ -55,4 +67,27 @@ public class ConsultaService {
 	public ConsultaEntity buscarPorId(Long id) {
 		return consultaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Consulta não encontrada"));
 	}
+	
+	// Marca a consulta como realizada, e inicia o prontuario
+	// TODO: criar exception 
+	public void realizarConsulta(Long consultaId, RealizarConsultaDto dto) {
+        ConsultaEntity consulta = consultaRepository.findById(consultaId)
+            .orElseThrow(() -> new EmailJaCadastradoException("Consulta não encontrada."));
+
+        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // Verifica se o profissional é o responsável pela consulta
+        if (!consulta.getProfissional().getUsuario().getEmail().equals(emailLogado)) {
+            throw new AccessDeniedException("Você não tem permissão para alterar esta consulta.");
+        }
+
+        consulta.setStatusConsulta(ConsultaStatus.REALIZADA);
+        consulta.setDataRealizada(LocalDateTime.now());
+        consulta.setDiagnostico(dto.getDiagnostico());
+        consulta.setObservacao(dto.getObservacao());
+
+        consultaRepository.save(consulta);
+
+        // gerarProntuario(consulta);
+    }
 }

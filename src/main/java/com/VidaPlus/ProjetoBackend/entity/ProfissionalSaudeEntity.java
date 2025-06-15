@@ -1,8 +1,6 @@
 package com.VidaPlus.ProjetoBackend.entity;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.beans.BeanUtils;
 
@@ -56,9 +54,6 @@ public class ProfissionalSaudeEntity {
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime dataCriacaoProfissional;
-
-	@Column
-	private String criadoPor;
 
 	public ProfissionalSaudeEntity(ProfissionalSaudeDto usuario) {
 		BeanUtils.copyProperties(usuario, this);

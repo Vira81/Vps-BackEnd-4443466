@@ -22,7 +22,7 @@ public class ProfissionalSaudeController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProfissionalSaudeDto> criarProfissional(@RequestBody ProfissionalSaudeDto dto) {
         
-    	ProfissionalSaudeDto response = profissionalSaudeService.cadastrar(dto);
+    	ProfissionalSaudeDto response = profissionalSaudeService.cadastrarProfissional(dto);
         return ResponseEntity.ok(response);
     }
 }

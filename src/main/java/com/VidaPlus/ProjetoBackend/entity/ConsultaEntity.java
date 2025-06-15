@@ -60,7 +60,7 @@ public class ConsultaEntity {
 	private Double valor;
 	
 	@Enumerated(EnumType.STRING)
-    @Column//(nullable = false)
+    @Column(nullable = false)
 	private ConsultaStatus statusConsulta;
 	
 	@ManyToOne(optional = false)
@@ -78,6 +78,12 @@ public class ConsultaEntity {
 	@ManyToOne(optional = false)
     @JoinColumn(name = "hospital_id", nullable = false)
     private HospitalEntity hospital;
+	
+	private LocalDateTime dataRealizada;
+	
+	private String Diagnostico;
+	
+	private String Observacao;
 	
 	public ConsultaEntity(ConsultaDto usuario) {
 		BeanUtils.copyProperties(usuario, this);

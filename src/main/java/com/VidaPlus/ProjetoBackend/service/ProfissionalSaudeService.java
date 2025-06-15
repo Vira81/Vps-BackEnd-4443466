@@ -23,7 +23,7 @@ public class ProfissionalSaudeService {
     @Autowired
     private PessoaRepository pessoaRepository;
 
-    public ProfissionalSaudeDto cadastrar(ProfissionalSaudeDto dto) {
+    public ProfissionalSaudeDto cadastrarProfissional(ProfissionalSaudeDto dto) {
         UsuarioEntity usuario = usuarioRepository.findById(dto.getUsuarioId())
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 

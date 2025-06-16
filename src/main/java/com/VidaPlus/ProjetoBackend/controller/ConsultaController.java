@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
+import com.VidaPlus.ProjetoBackend.dto.PrescricaoDto;
 import com.VidaPlus.ProjetoBackend.dto.RealizarConsultaDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
@@ -22,6 +23,7 @@ import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
 import com.VidaPlus.ProjetoBackend.service.ConsultaService;
+import com.VidaPlus.ProjetoBackend.service.PrescricaoService;
 import com.VidaPlus.ProjetoBackend.service.UsuarioLogadoService;
 
 import jakarta.validation.Valid;
@@ -30,10 +32,9 @@ import jakarta.validation.Valid;
 @RequestMapping("/consulta")
 @CrossOrigin
 public class ConsultaController {
-/**
- * TODO: Realizar mais testes. Melhorar Dto para controler informações passadas
- * Esqueci de passar StatusConsulta
- */
+	/**
+	 * 
+	 */
 	@Autowired
 	private UsuarioLogadoService usuarioLogadoService;
 
@@ -41,18 +42,21 @@ public class ConsultaController {
 	private ConsultaService consultaService;
 
 	@Autowired
+	private PrescricaoService prescricaoService;
+	
+	@Autowired
 	private ProfissionalSaudeRepository profissionalSaudeRepository;
 
 	/**
-	 * Somente o admin pode ver todas as consultas
-	 * TODO: criar um GET exclusivo para o profissional e o paciente
+	 * Somente o admin pode ver todas as consultas TODO: criar um GET exclusivo para
+	 * o profissional e o paciente
 	 * 
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
 	public ResponseEntity<ConsultaEntity> buscarPorId(@PathVariable Long id) {
-	    ConsultaEntity consulta = consultaService.buscarPorId(id);
-	    return ResponseEntity.ok(consulta);
+		ConsultaEntity consulta = consultaService.buscarPorId(id);
+		return ResponseEntity.ok(consulta);
 	}
 
 	/**
@@ -65,8 +69,8 @@ public class ConsultaController {
 
 		dto.setPacienteId(usuario.getId());
 
-		ConsultaEntity consultaCriada = consultaService.criarConsulta(dto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(consultaCriada);
+		consultaService.criarConsulta(dto);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Consulta criada com sucesso!");
 	}
 
 	// Profissional de saude cria uma consulta com ele e o paciente
@@ -84,30 +88,40 @@ public class ConsultaController {
 
 		dto.setProfissionalId(profissional.getId());
 
-		ConsultaEntity consultaCriada = consultaService.criarConsulta(dto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(consultaCriada);
+		consultaService.criarConsulta(dto);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Consulta criada com sucesso!");
 	}
 
 	// Admin cria consulta livremente
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/nova_consulta_admin")
 	public ResponseEntity<?> criarConsultaComoAdmin(@RequestBody ConsultaDto dto) {
-		ConsultaEntity consultaCriada = consultaService.criarConsulta(dto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(consultaCriada);
+		consultaService.criarConsulta(dto);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Consulta criada com sucesso!");
 	}
-	
+
 	/**
 	 * Atendimento da consulta
 	 */
 	@PostMapping("/{consultaId}/atender")
 	@PreAuthorize("hasRole('PROFISSIONAL')")
-    public ResponseEntity<?> atenderConsulta(
-        @PathVariable Long consultaId,
-        @RequestBody @Valid RealizarConsultaDto dto
-    ) {
-        consultaService.realizarConsulta(consultaId, dto);
-        return ResponseEntity.ok("Consulta realizada.");
-    }
+	public ResponseEntity<?> atenderConsulta(@PathVariable Long consultaId,
+			@RequestBody @Valid RealizarConsultaDto dto) {
+		consultaService.realizarConsulta(consultaId, dto);
+		return ResponseEntity.ok("Consulta realizada.");
+	}
+
 	
+	/**
+	 * Prescricao
+	 */
+	@PostMapping("/{consultaId}/atender/prescricao")
+	@PreAuthorize("hasRole('PROFISSIONAL')")
+	public ResponseEntity<?> atenderConsultaPrescicao(@PathVariable Long consultaId,
+            @RequestBody @Valid PrescricaoDto dto){
+		ConsultaEntity consulta = consultaService.buscarPorId(consultaId); 
+	    prescricaoService.gerarPrescricao(consulta, dto);
+		return ResponseEntity.ok("Prescricao gerada.");
+	}
 
 }

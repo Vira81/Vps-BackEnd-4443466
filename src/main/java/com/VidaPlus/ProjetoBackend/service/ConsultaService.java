@@ -40,7 +40,10 @@ public class ConsultaService {
 
 	@Autowired
 	private ProntuarioService prontuarioService;
-	
+
+	@Autowired
+	private PrescricaoService prescricaoService;
+
 	@Transactional
 	public ConsultaEntity criarConsulta(ConsultaDto dto) {
 
@@ -60,41 +63,40 @@ public class ConsultaService {
 
 		// Cria a consulta
 		ConsultaEntity novaConsulta = ConsultaEntity.builder().profissional(profissional).paciente(paciente)
-				.hospital(hospital).dia(dto.getDia()).hora(dto.getHora())
-				.statusConsulta(ConsultaStatus.AGENDADA).valor(dto.getValor()).build();
+				.hospital(hospital).dia(dto.getDia()).hora(dto.getHora()).statusConsulta(ConsultaStatus.AGENDADA)
+				.valor(dto.getValor()).build();
 
 		return consultaRepository.save(novaConsulta);
 	}
 
 	public ConsultaEntity buscarPorId(Long id) {
-		return consultaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Consulta não encontrada"));
+		return consultaRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Consulta não encontrada"));
 	}
-	
+
 	// Marca a consulta como realizada, e inicia o prontuario
-	// TODO: criar exception 
+	// TODO: criar exception
 	public void realizarConsulta(Long consultaId, RealizarConsultaDto dto) {
-        ConsultaEntity consulta = consultaRepository.findById(consultaId)
-            .orElseThrow(() -> new EmailJaCadastradoException("Consulta não encontrada."));
+		ConsultaEntity consulta = consultaRepository.findById(consultaId)
+				.orElseThrow(() -> new EmailJaCadastradoException("Consulta não encontrada."));
 
-        String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+		String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // Verifica se o profissional é o responsável pela consulta
-        if (!consulta.getProfissional().getUsuario().getEmail().equals(emailLogado)) {
-            throw new AccessDeniedException("Você não tem permissão para alterar esta consulta.");
-        }
-        
-        // Não pode alterar uma consulta já realizada
-        if (consulta.getStatusConsulta() == ConsultaStatus.REALIZADA) {
-            throw new IllegalStateException("Esta consulta já foi finalizada.");
-        }
+		// Verifica se o profissional é o responsável pela consulta
+		if (!consulta.getProfissional().getUsuario().getEmail().equals(emailLogado)) {
+			throw new AccessDeniedException("Você não tem permissão para alterar esta consulta.");
+		}
 
-        consulta.setStatusConsulta(ConsultaStatus.REALIZADA);
-        consulta.setDataRealizada(LocalDateTime.now());
-        consulta.setDiagnostico(dto.getDiagnostico());
-        consulta.setObservacao(dto.getObservacao());
+		// Não pode alterar uma consulta já realizada
+		if (consulta.getStatusConsulta() == ConsultaStatus.REALIZADA) {
+			throw new IllegalStateException("Esta consulta já foi finalizada.");
+		}
 
-        consultaRepository.save(consulta);
+		consulta.setStatusConsulta(ConsultaStatus.REALIZADA);
+		consulta.setDataRealizada(LocalDateTime.now());
 
-        prontuarioService.gerarProntuario(consulta);
-    }
+		consultaRepository.save(consulta);
+
+		prontuarioService.gerarProntuario(consulta, dto);
+	}
 }

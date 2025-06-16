@@ -9,7 +9,9 @@ import org.springframework.beans.BeanUtils;
 
 import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
 import com.VidaPlus.ProjetoBackend.entity.enums.ConsultaStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,6 +21,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,12 +35,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode (of = "id")
-@Table(name ="vps_consulta")
+@EqualsAndHashCode(of = "id")
+@Table(name = "vps_consulta")
 @Builder
 /**
- * Responsavel por criar uma consulta
- * Consulta -- Paciente, Profissional, Hospital 
+ * Responsavel por criar uma consulta Consulta -- Paciente, Profissional,
+ * Hospital
  * 
  */
 
@@ -53,41 +56,51 @@ public class ConsultaEntity {
 	private LocalTime hora;
 
 	@CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime dataCriacaoConsulta;
-	
+	@Column(nullable = false, updatable = false)
+	private LocalDateTime dataCriacaoConsulta;
+
 	@Column
 	private Double valor;
-	
+
 	@Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+	@Column(nullable = false)
 	private ConsultaStatus statusConsulta;
-	
+
 	@ManyToOne(optional = false)
-    @JoinColumn(name = "profissional_id", nullable = false)
-    private ProfissionalSaudeEntity profissional;
-	
+	@JoinColumn(name = "profissional_id", nullable = false)
+	private ProfissionalSaudeEntity profissional;
+
 	@ManyToOne(optional = false)
-    @JoinColumn(name = "paciente_id", nullable = false)
-    private PessoaEntity paciente;
-	
+	@JoinColumn(name = "paciente_id", nullable = false)
+	private PessoaEntity paciente;
+
 	/**
-	 * Essa consulta é presencial,
-	 * consulta online será realizada pela telemedicina
+	 * Essa consulta é presencial, consulta online será realizada pela telemedicina
 	 */
 	@ManyToOne(optional = false)
-    @JoinColumn(name = "hospital_id", nullable = false)
-    private HospitalEntity hospital;
-	
+	@JoinColumn(name = "hospital_id", nullable = false)
+	private HospitalEntity hospital;
+
 	private LocalDateTime dataRealizada;
-	
-	private String Diagnostico;
-	
-	private String Observacao;
-	
+
+	//private String diagnostico;
+
+	//private String observacao;
+
+	//private String medicacao;
+
+	//private String posologia;
+
+	@OneToOne(mappedBy = "consulta", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private PrescricaoEntity prescricao;
+
+	@OneToOne(mappedBy = "consulta", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private ProntuarioEntity prontuario;
+
 	public ConsultaEntity(ConsultaDto usuario) {
 		BeanUtils.copyProperties(usuario, this);
 	}
-
 
 }

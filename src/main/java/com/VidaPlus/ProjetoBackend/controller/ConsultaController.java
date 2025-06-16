@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
+import com.VidaPlus.ProjetoBackend.dto.ConsultaGetDto;
 import com.VidaPlus.ProjetoBackend.dto.PrescricaoDto;
 import com.VidaPlus.ProjetoBackend.dto.RealizarConsultaDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
@@ -54,9 +55,10 @@ public class ConsultaController {
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/{id}")
-	public ResponseEntity<ConsultaEntity> buscarPorId(@PathVariable Long id) {
-		ConsultaEntity consulta = consultaService.buscarPorId(id);
-		return ResponseEntity.ok(consulta);
+	public ResponseEntity<ConsultaGetDto> buscarPorId(@PathVariable Long id) {
+	    ConsultaEntity consulta = consultaService.buscarPorId(id);
+	    ConsultaGetDto responseDto = new ConsultaGetDto(consulta);
+	    return ResponseEntity.ok(responseDto);
 	}
 
 	/**

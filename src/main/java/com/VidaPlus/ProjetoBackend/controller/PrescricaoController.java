@@ -39,7 +39,7 @@ public class PrescricaoController {
 		byte[] pdfBytes = prescricaoService.gerarPdfProntuario(prontuario);
 
 		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=prescrição_" + id + ".pdf")
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=prescricao_" + id + ".pdf")
 				.contentType(MediaType.APPLICATION_PDF).body(pdfBytes);
 	}
 }

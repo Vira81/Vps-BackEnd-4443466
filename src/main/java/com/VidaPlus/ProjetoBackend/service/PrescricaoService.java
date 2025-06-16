@@ -47,7 +47,7 @@ public class PrescricaoService {
 	    document.add(new Paragraph("Data: " + prescricao.getDataCriacao()));
 	    document.add(new Paragraph("Diagnostico: " + prescricao.getConsulta().getProntuario().getDiagnostico()));
 	    document.add(new Paragraph("Medicação: " + prescricao.getMedicacao()));
-	    document.add(new Paragraph("posologia: " + prescricao.getPosologia()));
+	    document.add(new Paragraph("Posologia: " + prescricao.getPosologia()));
 
 	    document.close();
 	    return out.toByteArray();

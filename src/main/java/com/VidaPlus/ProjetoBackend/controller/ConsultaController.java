@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -74,6 +75,15 @@ public class ConsultaController {
 		consultaService.criarConsulta(dto);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Consulta criada com sucesso!");
 	}
+	
+	//cancelar consulta
+	@PutMapping("/{id}/cancelar")
+	@PreAuthorize("hasRole('PACIENTE')")
+	public ResponseEntity<?> cancelarConsulta(@PathVariable Long id) {
+	    consultaService.cancelarConsultaPaciente(id);
+	    return ResponseEntity.ok("Consulta cancelada com sucesso.");
+	}
+	
 
 	// Profissional de saude cria uma consulta com ele e o paciente
 	@PreAuthorize("hasRole('PROFISSIONAL')")

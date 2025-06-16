@@ -13,6 +13,7 @@ import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.HospitalEntity;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
+import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.ConsultaStatus;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.exception.EmailJaCadastradoException;
@@ -43,6 +44,10 @@ public class ConsultaService {
 
 	@Autowired
 	private PrescricaoService prescricaoService;
+	
+
+	@Autowired
+	private UsuarioLogadoService usuarioLogadoService;
 
 	@Transactional
 	public ConsultaEntity criarConsulta(ConsultaDto dto) {
@@ -91,6 +96,10 @@ public class ConsultaService {
 		if (consulta.getStatusConsulta() == ConsultaStatus.REALIZADA) {
 			throw new IllegalStateException("Esta consulta já foi finalizada.");
 		}
+		
+		if (!consulta.getStatusConsulta().equals(ConsultaStatus.AGENDADA)) {
+			throw new IllegalStateException("Esta consulta foi cancelada: " + consulta.getStatusConsulta());
+		}
 
 		consulta.setStatusConsulta(ConsultaStatus.REALIZADA);
 		consulta.setDataRealizada(LocalDateTime.now());
@@ -98,5 +107,24 @@ public class ConsultaService {
 		consultaRepository.save(consulta);
 
 		prontuarioService.gerarProntuario(consulta, dto);
+	}
+	
+	public void cancelarConsultaPaciente(Long consultaId) {
+	    ConsultaEntity consulta = consultaRepository.findById(consultaId)
+	        .orElseThrow(() -> new EntityNotFoundException("Consulta não encontrada"));
+
+	    UsuarioEntity usuarioLogado = usuarioLogadoService.getUsuarioLogado();
+	    
+	    // Verifica se o paciente logado é o dono da consulta
+	    if (!consulta.getPaciente().getUsuario().getId().equals(usuarioLogado.getId())) {
+	        throw new AccessDeniedException("Você não pode cancelar essa consulta. Verifique Id.");
+	    }
+
+	    if (!consulta.getStatusConsulta().equals(ConsultaStatus.AGENDADA)) {
+	        throw new IllegalStateException("Apenas consultas agendadas podem ser canceladas.");
+	    }
+
+	    consulta.setStatusConsulta(ConsultaStatus.CANCELADA_PACIENTE);
+	    consultaRepository.save(consulta);
 	}
 }

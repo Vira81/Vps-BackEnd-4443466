@@ -1,0 +1,153 @@
+package com.VidaPlus.ProjetoBackend.service;
+
+import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.VidaPlus.ProjetoBackend.dto.HistoricoPacienteDto;
+import com.VidaPlus.ProjetoBackend.dto.NovoHistoricoPacienteDto;
+import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
+import com.VidaPlus.ProjetoBackend.entity.HistoricoPaciente;
+import com.VidaPlus.ProjetoBackend.entity.NovoHistoricoPaciente;
+import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
+import com.VidaPlus.ProjetoBackend.entity.PrescricaoEntity;
+import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
+import com.VidaPlus.ProjetoBackend.entity.ProntuarioEntity;
+import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
+import com.VidaPlus.ProjetoBackend.entity.enums.TipoEspecialidadeSaude;
+import com.VidaPlus.ProjetoBackend.repository.HistoricoPacienteRepository;
+import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
+
+@Service
+public class HistoricoPacienteService {
+	@Autowired
+	private HistoricoPacienteRepository historicoPacienteRepository;
+
+	@Autowired
+	private UsuarioLogadoService usuarioLogadoService;
+
+	@Autowired
+	private PessoaRepository pessoaRepository;
+
+	public void registrarEntradaConsulta(PessoaEntity paciente, ProfissionalSaudeEntity profissional, String descricao,
+			ConsultaEntity consulta) {
+		HistoricoPaciente historico = historicoPacienteRepository.findByPaciente(paciente)
+				.orElseGet(() -> criarNovoHistorico(paciente));
+
+		NovoHistoricoPaciente novo = new NovoHistoricoPaciente();
+		novo.setDataEntrada(LocalDate.now());
+		novo.setDescricao(descricao);
+		novo.setTipo(TipoEspecialidadeSaude.CONSULTA);
+		novo.setProfissionalResponsavel(profissional);
+		novo.setHistoricoPaciente(historico);
+
+		historico.getEntradas().add(novo);
+		historico.setDataUltimaAtualizacao(LocalDate.now());
+
+		novo.setConsulta(consulta);
+
+		historicoPacienteRepository.save(historico);
+	}
+
+	private HistoricoPaciente criarNovoHistorico(PessoaEntity paciente) {
+		HistoricoPaciente historico = new HistoricoPaciente();
+		historico.setPaciente(paciente);
+		historico.setDataUltimaAtualizacao(LocalDate.now());
+		historico.setEntradas(new ArrayList<>());
+		return historico;
+	}
+
+	public HistoricoPacienteDto buscarHistoricoPaciente() {
+		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
+
+		PessoaEntity paciente = pessoaRepository.findByUsuario(usuario)
+				.orElseThrow(() -> new RuntimeException("Paciente não encontrado."));
+
+		HistoricoPaciente historico = historicoPacienteRepository.findByPaciente(paciente)
+				.orElseThrow(() -> new RuntimeException("Histórico clínico não encontrado."));
+
+		return historicoSaida(historico);
+	}
+
+	private HistoricoPacienteDto historicoSaida(HistoricoPaciente entity) {
+		List<NovoHistoricoPacienteDto> entradas = entity.getEntradas().stream().map(entrada -> {
+			NovoHistoricoPacienteDto dto = new NovoHistoricoPacienteDto();
+			dto.setDataEntrada(entrada.getDataEntrada());
+			dto.setDescricao(entrada.getDescricao());
+			dto.setTipo(entrada.getTipo());
+			dto.setNomeProfissional(entrada.getProfissionalResponsavel().getPessoa().getNome());
+
+			if (entrada.getConsulta() != null && entrada.getConsulta().getProntuario() != null) {
+				ProntuarioEntity prontuario = entrada.getConsulta().getProntuario();
+				dto.setDiagnostico(prontuario.getDiagnostico());
+				dto.setObservacao(prontuario.getObservacao());
+				if (entrada.getConsulta().getPrescricao() != null) {
+					PrescricaoEntity prescricao = entrada.getConsulta().getPrescricao();
+					dto.setMedicacao(prescricao.getMedicacao());
+					dto.setPosologia(prescricao.getPosologia());
+				}
+			}
+
+			return dto;
+		}).toList();
+
+		HistoricoPacienteDto dto = new HistoricoPacienteDto();
+		dto.setId(entity.getId());
+		dto.setDataUltimaAtualizacao(entity.getDataUltimaAtualizacao());
+		dto.setEntradas(entradas);
+		return dto;
+	}
+
+	public byte[] gerarPdfHistoricoPaciente(HistoricoPacienteDto historico) {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		Document document = new Document();
+		PdfWriter.getInstance(document, outputStream);
+
+		document.open();
+
+		document.add(new Paragraph("Histórico Clínico do Paciente"));
+		document.add(new Paragraph("Última atualização: "
+				+ historico.getDataUltimaAtualizacao()));
+		document.add(Chunk.NEWLINE);
+
+		List<NovoHistoricoPacienteDto> entradas = historico.getEntradas();
+
+//Imprimi a lista
+		for (NovoHistoricoPacienteDto entrada : entradas) {
+			document.add(new Paragraph(
+					"Data: " + entrada.getDataEntrada()));
+			document.add(new Paragraph("Tipo: " + entrada.getTipo()));
+			document.add(new Paragraph("Profissional: Dr(a). " + entrada.getNomeProfissional()));
+			document.add(new Paragraph("Descrição: " + entrada.getDescricao()));
+
+			if (entrada.getDiagnostico() != null) {
+				document.add(new Paragraph("Diagnóstico: " + entrada.getDiagnostico()));
+			}
+			if (entrada.getObservacao() != null) {
+				document.add(new Paragraph("Observações: " + entrada.getObservacao()));
+			}
+			if (entrada.getMedicacao() != null) {
+				document.add(new Paragraph("Medicação: " + entrada.getMedicacao()));
+			}
+			if (entrada.getPosologia() != null) {
+				document.add(new Paragraph("Posologia: " + entrada.getPosologia()));
+			}
+
+			document.add(Chunk.NEWLINE);
+		}
+
+		document.close();
+
+		return outputStream.toByteArray();
+	}
+}

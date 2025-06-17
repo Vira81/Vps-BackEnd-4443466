@@ -33,7 +33,7 @@ public class PrescricaoService {
 	    prescricaoRepository.save(prescricao);
 	}
 	
-	public byte[] gerarPdfProntuario(PrescricaoEntity prescricao) {
+	public byte[] gerarPdfPrescricao(PrescricaoEntity prescricao) {
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 	    Document document = new Document();

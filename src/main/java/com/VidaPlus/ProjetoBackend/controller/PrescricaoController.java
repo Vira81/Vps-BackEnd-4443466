@@ -36,7 +36,7 @@ public class PrescricaoController {
 		PrescricaoEntity prontuario = prescricaoRepository.findById(id)
 				.orElseThrow(() -> new EmailJaCadastradoException("Prescrição não encontrado"));
 
-		byte[] pdfBytes = prescricaoService.gerarPdfProntuario(prontuario);
+		byte[] pdfBytes = prescricaoService.gerarPdfPrescricao(prontuario);
 
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=prescricao_" + id + ".pdf")

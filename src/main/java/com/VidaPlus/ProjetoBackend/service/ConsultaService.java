@@ -43,7 +43,7 @@ public class ConsultaService {
 	private ProntuarioService prontuarioService;
 
 	@Autowired
-	private PrescricaoService prescricaoService;
+	private HistoricoPacienteService historicoPacienteService;
 	
 
 	@Autowired
@@ -107,6 +107,18 @@ public class ConsultaService {
 		consultaRepository.save(consulta);
 
 		prontuarioService.gerarProntuario(consulta, dto);
+		
+		String descricao = String.format("Consulta realizada em %s com Dr(a). %s.",
+			    consulta.getDataRealizada().toLocalDate(),
+			    consulta.getProfissional().getPessoa().getNome()
+			);
+
+			historicoPacienteService.registrarEntradaConsulta(
+			    consulta.getPaciente(),
+			    consulta.getProfissional(),
+			    descricao,
+			    consulta
+			);
 	}
 	
 	public void cancelarConsultaPaciente(Long consultaId) {
@@ -126,5 +138,7 @@ public class ConsultaService {
 
 	    consulta.setStatusConsulta(ConsultaStatus.CANCELADA_PACIENTE);
 	    consultaRepository.save(consulta);
+	    
+	    
 	}
 }

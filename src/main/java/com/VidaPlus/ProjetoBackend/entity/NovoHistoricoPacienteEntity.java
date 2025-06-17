@@ -22,14 +22,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "vps_novo_historico_paciente")
-public class NovoHistoricoPaciente {
+public class NovoHistoricoPacienteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    private HistoricoPaciente historicoPaciente;
+    private HistoricoPacienteEntity historicoPaciente;
 
     @Column(length = 1000)
     private String descricao;

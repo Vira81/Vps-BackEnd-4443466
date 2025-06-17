@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "vps_historico_paciente")
-public class HistoricoPaciente {
+public class HistoricoPacienteEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,5 +31,5 @@ public class HistoricoPaciente {
 	private LocalDate dataUltimaAtualizacao;
 
 	@OneToMany(mappedBy = "historicoPaciente", cascade = CascadeType.ALL)
-	private List<NovoHistoricoPaciente> entradas = new ArrayList<>();
+	private List<NovoHistoricoPacienteEntity> entradas = new ArrayList<>();
 }

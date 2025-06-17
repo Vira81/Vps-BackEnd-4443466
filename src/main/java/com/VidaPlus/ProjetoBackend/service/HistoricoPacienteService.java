@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import com.VidaPlus.ProjetoBackend.dto.HistoricoPacienteDto;
 import com.VidaPlus.ProjetoBackend.dto.NovoHistoricoPacienteDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
-import com.VidaPlus.ProjetoBackend.entity.HistoricoPaciente;
-import com.VidaPlus.ProjetoBackend.entity.NovoHistoricoPaciente;
+import com.VidaPlus.ProjetoBackend.entity.HistoricoPacienteEntity;
+import com.VidaPlus.ProjetoBackend.entity.NovoHistoricoPacienteEntity;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.PrescricaoEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
@@ -40,10 +40,10 @@ public class HistoricoPacienteService {
 
 	public void registrarEntradaConsulta(PessoaEntity paciente, ProfissionalSaudeEntity profissional, String descricao,
 			ConsultaEntity consulta) {
-		HistoricoPaciente historico = historicoPacienteRepository.findByPaciente(paciente)
+		HistoricoPacienteEntity historico = historicoPacienteRepository.findByPaciente(paciente)
 				.orElseGet(() -> criarNovoHistorico(paciente));
 
-		NovoHistoricoPaciente novo = new NovoHistoricoPaciente();
+		NovoHistoricoPacienteEntity novo = new NovoHistoricoPacienteEntity();
 		novo.setDataEntrada(LocalDate.now());
 		novo.setDescricao(descricao);
 		novo.setTipo(TipoEspecialidadeSaude.CONSULTA);
@@ -58,8 +58,8 @@ public class HistoricoPacienteService {
 		historicoPacienteRepository.save(historico);
 	}
 
-	private HistoricoPaciente criarNovoHistorico(PessoaEntity paciente) {
-		HistoricoPaciente historico = new HistoricoPaciente();
+	private HistoricoPacienteEntity criarNovoHistorico(PessoaEntity paciente) {
+		HistoricoPacienteEntity historico = new HistoricoPacienteEntity();
 		historico.setPaciente(paciente);
 		historico.setDataUltimaAtualizacao(LocalDate.now());
 		historico.setEntradas(new ArrayList<>());
@@ -72,13 +72,13 @@ public class HistoricoPacienteService {
 		PessoaEntity paciente = pessoaRepository.findByUsuario(usuario)
 				.orElseThrow(() -> new RuntimeException("Paciente não encontrado."));
 
-		HistoricoPaciente historico = historicoPacienteRepository.findByPaciente(paciente)
+		HistoricoPacienteEntity historico = historicoPacienteRepository.findByPaciente(paciente)
 				.orElseThrow(() -> new RuntimeException("Histórico clínico não encontrado."));
 
 		return historicoSaida(historico);
 	}
 
-	private HistoricoPacienteDto historicoSaida(HistoricoPaciente entity) {
+	private HistoricoPacienteDto historicoSaida(HistoricoPacienteEntity entity) {
 		List<NovoHistoricoPacienteDto> entradas = entity.getEntradas().stream().map(entrada -> {
 			NovoHistoricoPacienteDto dto = new NovoHistoricoPacienteDto();
 			dto.setDataEntrada(entrada.getDataEntrada());

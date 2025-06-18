@@ -53,7 +53,7 @@ public class DataInitializer {
             if (pessoaOptional.isPresent()) {
                 PessoaEntity pessoa = pessoaOptional.get();
                 pessoa.setNome("Admin");
-                pessoa.setCpf("123.456.789-00");
+                pessoa.setCpf("123.456.789-11");
                 pessoa.setDataNascimento(LocalDate.of(1990, 5, 20));
                 pessoa.setTelefone("(11) 99999-0000");
 
@@ -83,7 +83,7 @@ public class DataInitializer {
             if (pessoaOptional2.isPresent()) {
                 PessoaEntity pessoaF = pessoaOptional2.get();
                 pessoaF.setNome("Medico saude");
-                pessoaF.setCpf("123.456.789-00");
+                pessoaF.setCpf("123.456.789-22");
                 pessoaF.setDataNascimento(LocalDate.of(1990, 5, 20));
                 pessoaF.setTelefone("(11) 99999-0000");
 

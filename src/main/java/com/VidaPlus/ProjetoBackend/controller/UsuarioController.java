@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.VidaPlus.ProjetoBackend.dto.EmailAlterarDto;
+import com.VidaPlus.ProjetoBackend.dto.EmailDto;
 import com.VidaPlus.ProjetoBackend.dto.SenhaAlterarDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioCadastroDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
@@ -76,9 +77,16 @@ public class UsuarioController {
 	 * Atualiza os dados de um usuário existente.
 	 */
 	@PutMapping("/atualizar_email")
-	public ResponseEntity<String> atualizarEmail(@ Valid @RequestBody EmailAlterarDto dto) {
+	public ResponseEntity<String> atualizarEmail(@ Valid @RequestBody EmailDto dto) {
 	    usuarioService.atualizarEmail(dto);
 	    return ResponseEntity.ok("Email atualizado com sucesso");
+	}
+	
+	
+	@PutMapping("/desativar-conta")
+	public ResponseEntity<String> desativar() {
+		usuarioService.desativarUsuario();
+	    return ResponseEntity.ok("Conta desativada!");
 	}
 	
 	@PutMapping("/atualizar_senha")
@@ -87,40 +95,24 @@ public class UsuarioController {
 	    return ResponseEntity.ok("Senha atualizada com sucesso");
 	}
 	
-	
-
-	/**
-	 * Remove um usuário pelo ID.
-	 */
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deletar(@PathVariable Long id) {
-		usuarioService.deletar(id);
-		return ResponseEntity.noContent().build(); // HTTP 204
-	}
-
-	/**
-	 * Somente o ADMIN pode alterar o perfil
-	 */
-	@PutMapping("/{id}/perfil")
+	@GetMapping("/buscar/email")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> atualizarPerfil(@PathVariable Long id, @RequestBody UsuarioPerfilDto dto) {
-		Optional<UsuarioEntity> optionalUsuario = usuarioRepository.findById(id);
-
-		if (optionalUsuario.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
-		}
-
-		UsuarioEntity usuario = optionalUsuario.get();
-		logger.info("Tentando alterar usuário com Id: {}", usuario.getId());
-		if (dto.getPerfil() != null) {
-			usuario.setPerfil(dto.getPerfil());
-		}
-
-		if (dto.getStatus() != null) {
-			usuario.setStatus(dto.getStatus());
-		}
-
-		usuarioRepository.save(usuario);
-		return ResponseEntity.ok("Perfil e/ou status atualizados com sucesso.");
+	public ResponseEntity<UsuarioSaidaDto> buscarPorEmail(@RequestParam String email) {
+	    return ResponseEntity.ok(usuarioService.buscarPorEmail(email));
 	}
+	
+	@GetMapping("/buscar/nome")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<UsuarioSaidaDto>> buscarPorNome(@RequestParam String nome) {
+	    return ResponseEntity.ok(usuarioService.buscarPorNome(nome));
+	}
+	
+	@PutMapping("/perfil/alterar")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<UsuarioSaidaDto> atualizarPerfilPorCpf(@RequestBody @Valid UsuarioPerfilDto dto) {
+	    UsuarioSaidaDto atualizado = usuarioService.atualizarPerfilPorCpf(dto);
+	    return ResponseEntity.ok(atualizado);
+	}
+
+	
 }

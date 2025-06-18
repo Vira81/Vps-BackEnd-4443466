@@ -14,6 +14,6 @@ public class SenhaAlterarDto {
 	
 	@NotBlank(message = "A nova senha é obrigatória")
 	@Size(min = 3, message = "A senha tem que conter no minimo 3 caracteres")
-	private String NovaSenha;
+	private String novaSenha;
 	
 }

@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EmailAlterarDto {
+public class EmailDto {
 	@NotBlank(message = "E-mail é obrigatório")
 	@Email(message = "E-mail inválido")
 	private String email;

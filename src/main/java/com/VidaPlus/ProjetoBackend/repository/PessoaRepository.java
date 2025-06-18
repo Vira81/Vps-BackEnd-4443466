@@ -11,4 +11,5 @@ import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 @Repository
 public interface PessoaRepository extends JpaRepository<PessoaEntity, Long> {
 	Optional<PessoaEntity> findByUsuario(UsuarioEntity usuario);
+	
 }

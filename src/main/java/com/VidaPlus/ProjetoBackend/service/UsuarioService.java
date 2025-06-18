@@ -1,8 +1,6 @@
 package com.VidaPlus.ProjetoBackend.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.VidaPlus.ProjetoBackend.dto.EmailAlterarDto;
+import com.VidaPlus.ProjetoBackend.dto.EmailDto;
 import com.VidaPlus.ProjetoBackend.dto.SenhaAlterarDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioCadastroDto;
-import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioPerfilDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioSaidaDto;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
@@ -36,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 
 public class UsuarioService {
-	private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
+	//private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
@@ -50,10 +47,10 @@ public class UsuarioService {
 	private UsuarioLogadoService login;
 
 	/**
-	 * O usuario altera o email usado para logar
-	 * O token antigo será invalido, logar usando o email novo.
+	 * O usuario altera o email usado para logar O token antigo será invalido, logar
+	 * usando o email novo.
 	 */
-	public ResponseEntity<?> atualizarEmail(EmailAlterarDto dto) {
+	public ResponseEntity<?> atualizarEmail(EmailDto dto) {
 		UsuarioEntity usuario = buscarId(login.getUsuarioLogado().getId());
 
 		if (dto.getEmail() != null && !dto.getEmail().equals(usuario.getEmail())) {
@@ -71,97 +68,123 @@ public class UsuarioService {
 	public UsuarioEntity buscarId(Long id) {
 		return usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 	}
-	
+
 	/**
-	 * Buscar Usuario por Id
-	 * Usado para controlar a saida de dados sensiveis
+	 * Buscar Usuario por Id Usado para controlar a saida de dados sensiveis
 	 */
 	public UsuarioSaidaDto buscarPorId(Long id) {
-		UsuarioEntity usuario = usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+		UsuarioEntity usuario = usuarioRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 		return new UsuarioSaidaDto(usuario);
 	}
 
 	/**
-	 * Lista todos os usuarios
-	 * usando o Dto de saida
+	 * Lista todos os usuarios usando o Dto de saida
 	 */
 	@Transactional
 	public List<UsuarioSaidaDto> listarTodosUsuarios() {
-	    List<UsuarioEntity> usuarios = usuarioRepository.findAllSaida(); 
-	    return usuarios.stream()
-	                   .map(UsuarioSaidaDto::new)
-	                   .toList();
+		List<UsuarioEntity> usuarios = usuarioRepository.findAllSaida();
+		return usuarios.stream().map(UsuarioSaidaDto::new).toList();
 	}
 
-
+	/**
+	 * Atualiza a senha do usuario
+	 * 
+	 */
 	public ResponseEntity<?> atualizarSenha(SenhaAlterarDto dto) {
+
 		UsuarioEntity usuario = buscarId(login.getUsuarioLogado().getId());
-		
-		//usuario.setSenhaHash(passwordEncoder.encode(novaSenha));
+		// Compara a senha atual com a senha informada
+		if (passwordEncoder.matches(dto.getSenha(), usuario.getSenhaHash())) {
+			usuario.setSenhaHash(passwordEncoder.encode(dto.getNovaSenha()));
+		} else {
+			throw new AlteracaoIndevida("A senha atual está incorreta!");
+		}
 
 		usuarioRepository.save(usuario);
 		return ResponseEntity.ok("Senha atualizada com sucesso");
 	}
+
+
+	/**
+	 * Marca o usuario como Inativo
+	 * TODO: Desativar Token
+	 */
+	public void desativarUsuario() {
+		UsuarioEntity usuario = buscarId(login.getUsuarioLogado().getId());
+		usuario.setStatus(StatusUsuario.INATIVO);
+	}
 	
-	// Atualizar senha
-	public void alterarSenha(Long id, String novaSenha) {
-	//	UsuarioEntity usuario = buscarId(id);
-	//	usuario.setSenhaHash(passwordEncoder.encode(novaSenha));
-	//	usuarioRepository.save(usuario);
+	// TODO: Desativar o Token, quando o usuario sair
+	// TODO: Controller
+	public void logOut() {
+		
+	}
+	
+	/**
+	 * Buscar por email (exato)
+	 * TODO: criar exception
+	 */
+	public UsuarioSaidaDto buscarPorEmail(String email) {
+	    UsuarioEntity usuario = usuarioRepository.findByEmail(email)
+	        .orElseThrow(() -> new AlteracaoIndevida("Usuário não encontrado"));
+	    return new UsuarioSaidaDto(usuario);
+	}
+	
+	/**
+	 * Busca por uma parte do nome do usuario
+	 */
+	public List<UsuarioSaidaDto> buscarPorNome(String nome) {
+	    return usuarioRepository.findByPessoaNomeContainingIgnoreCase(nome)
+	        .stream()
+	        .map(UsuarioSaidaDto::new)
+	        .toList();
 	}
 
 	/**
-	 * Deletar usuario por Id TODO: Realizar mais testes
-	 * 
-	 * @param id
+	 * Cria um novo usuario
 	 */
-	public void deletar(Long id) {
-		if (!usuarioRepository.existsById(id)) {
-			throw new RuntimeException("Usuário com ID " + id + " não encontrado");
-		}
-
-		usuarioRepository.deleteById(id);
-		logger.info("Usuário com ID {} foi deletado", id);
-	}
-
-	// Buscar por email
-	public Optional<UsuarioEntity> buscarPorEmail(String email) {
-		return usuarioRepository.findByEmail(email);
-	}
-
-	// Atualizar último acesso
-	public void atualizarUltimoAcesso(UsuarioEntity usuario) {
-		usuario.setUltimoAcesso(LocalDateTime.now());
-		usuarioRepository.save(usuario);
-	}
-
 	public UsuarioEntity cadastrarNovoUsuario(UsuarioCadastroDto dto) {
 		if (usuarioRepository.existsByEmail(dto.getEmail())) {
 			throw new EmailJaCadastradoException("O e-mail informado já está cadastrado.");
 		}
 
+		// Perfil de Paciente e Status Pendente
 		UsuarioEntity novoUsuario = UsuarioEntity.builder().email(dto.getEmail())
 				.senhaHash(passwordEncoder.encode(dto.getSenha())).perfil(PerfilUsuario.PACIENTE)
 				.status(StatusUsuario.PENDENTE).pessoa(new PessoaEntity()).build();
 
 		return usuarioRepository.save(novoUsuario);
 	}
+	
+	/**
+	 * Alterar o Status e Perfil do usuario, buscando por CPF
+	 * 
+	 * Poderia ser separado...
+	 * TODO: Exception
+	 *  
+	 **/
+	public UsuarioSaidaDto atualizarPerfilPorCpf(UsuarioPerfilDto dto) {
 
-	public boolean usuarioPodeAlterar(Long pessoaId) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String emailLogado = auth.getName();
+	    // Buscar o usuário pelo CPF 
+	    UsuarioEntity usuario = usuarioRepository.findByPessoaCpf(dto.getCpf())
+	        .orElseThrow(() -> new AlteracaoIndevida("Usuário com esse CPF não foi encontrado"));
 
-		return pessoaRepository.findById(pessoaId).map(pessoa -> pessoa.getUsuario().getEmail().equals(emailLogado))
-				.orElseThrow(() -> new AlteracaoIndevida("Somente é possivel alterar os seus dados"));
+	    if (dto.getPerfil() != null) {
+	        usuario.setPerfil(dto.getPerfil());
+	    }
+
+	    if (dto.getStatus() != null) {
+	        usuario.setStatus(dto.getStatus());
+	    }
+	    
+	    if (dto.getPerfil() == null && dto.getStatus() == null) {
+	    	throw new AlteracaoIndevida("Nenhum dado foi informado");
+	    }
+	    
+	    usuarioRepository.save(usuario);
+	    return new UsuarioSaidaDto(usuario);
 	}
 
-	public ResponseEntity<?> atualizarPerfil(Long id, UsuarioPerfilDto dto) {
-		UsuarioEntity usuario = usuarioRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-		usuario.setPerfil(dto.getPerfil());
-		usuarioRepository.save(usuario);
-
-		return ResponseEntity.ok("Perfil atualizado com sucesso");
-	}
 
 }

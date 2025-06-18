@@ -1,12 +1,20 @@
 package com.VidaPlus.ProjetoBackend.service;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.ProfissionalSaudeDto;
+import com.VidaPlus.ProjetoBackend.entity.HospitalEntity;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
+import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
+import com.VidaPlus.ProjetoBackend.exception.AlteracaoIndevida;
+import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
 import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
 import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
@@ -14,45 +22,69 @@ import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 @Service
 public class ProfissionalSaudeService {
 
-    @Autowired
-    private ProfissionalSaudeRepository profissionalSaudeRepository;
+	@Autowired
+	private ProfissionalSaudeRepository profissionalSaudeRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private PessoaRepository pessoaRepository;
+	@Autowired
+	private HospitalRepository hospitalRepository;
 
-    /**
-     * Admin salva os dados do profissional de saude.
-     * O perfil tem que estar como profissional primeiro.
-     * TODO: Alterar para que não seja preciso usar "atualizarPerfil" primeiro
-     * TODO: Expandir com mais informações.
-     */
-    public ProfissionalSaudeDto cadastrarProfissional(ProfissionalSaudeDto dto) {
-        UsuarioEntity usuario = usuarioRepository.findById(dto.getUsuarioId())
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+	@Autowired
+	private PessoaRepository pessoaRepository;
 
-        PessoaEntity pessoa = pessoaRepository.findById(dto.getPessoaId())
-            .orElseThrow(() -> new RuntimeException("Pessoa não encontrada"));
+	/**
+	 * Admin salva os dados do profissional de saude.
+	 * 
+	 * 
+	 */
+	public ProfissionalSaudeEntity cadastrarProfissional(ProfissionalSaudeDto dto) {
+		// Busca por CPF
+		UsuarioEntity usuario = usuarioRepository.findByPessoaCpf(dto.getCpf())
+				.orElseThrow(() -> new AlteracaoIndevida("Usuário com esse CPF não foi encontrado"));
 
-        if (!"PROFISSIONAL".equalsIgnoreCase(usuario.getPerfil().name())) {
-            throw new RuntimeException("O usuário não é Profissional de Saude.");
-        }
-        ProfissionalSaudeEntity profissional = new ProfissionalSaudeEntity();
-        profissional.setUsuario(usuario);
-        profissional.setPessoa(pessoa);
-        profissional.setEspecialidade(dto.getEspecialidade());
-        profissional.setCrm(dto.getCrm());
+		PessoaEntity pessoa = usuario.getPessoa();
 
-        ProfissionalSaudeEntity salvo = profissionalSaudeRepository.save(profissional);
+		// Ja existe um cadastro
+		if (pessoa.getProfissionalSaude() != null) {
+			throw new IllegalStateException("Essa pessoa já está cadastrada como profissional de saúde.");
+		}
 
-        ProfissionalSaudeDto response = new ProfissionalSaudeDto();
-        response.setId(salvo.getId());
-        response.setEspecialidade(salvo.getEspecialidade());
-        response.setCrm(salvo.getCrm());
-        response.setDataCriacaoProfissional(salvo.getDataCriacaoProfissional());
+		// Altera o tipo automaticamente se for paciente
+		if (usuario.getPerfil() == PerfilUsuario.PACIENTE) {
+			usuario.setPerfil(PerfilUsuario.PROFISSIONAL);
 
-        return response;
-    }
+		}
+
+		// Salva os dados
+		ProfissionalSaudeEntity profissional = new ProfissionalSaudeEntity();
+		profissional.setPessoa(pessoa);
+		profissional.setUsuario(usuario);
+		profissional.setCrm(dto.getCrm());
+		profissional.setFuncao(dto.getFuncao());
+		profissional.setEspecialidade(dto.getEspecialidade());
+		profissional.setDataCriacaoProfissional(LocalDateTime.now());
+
+		// Dias e o hospital aonde o funcionario trabalha
+		// Podem ser Nulos (em caso de Telemedicina)
+		if (dto.getDiasTrabalho() != null) {
+			profissional.setDiasTrabalho(dto.getDiasTrabalho());
+		}
+
+		if (dto.getHospitaisIds() != null) {
+			Set<Long> ids = dto.getHospitaisIds();
+
+			Set<HospitalEntity> hospitais = new HashSet<>();
+			for (Long id : ids) {
+				HospitalEntity hospital = hospitalRepository.findById(id)
+						.orElseThrow(() -> new AlteracaoIndevida("Hospital id " + id + " não encontrado"));
+				hospitais.add(hospital);
+			}
+			profissional.setHospitais(hospitais);
+
+		}
+
+		return profissionalSaudeRepository.save(profissional);
+	}
 }

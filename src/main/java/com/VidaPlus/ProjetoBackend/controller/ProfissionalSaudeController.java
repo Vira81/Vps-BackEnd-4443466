@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,9 +21,19 @@ public class ProfissionalSaudeController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProfissionalSaudeDto> criarProfissional(@RequestBody ProfissionalSaudeDto dto) {
+    public ResponseEntity<String> criarProfissional(@RequestBody ProfissionalSaudeDto dto) {
         
-    	ProfissionalSaudeDto response = profissionalSaudeService.cadastrarProfissional(dto);
-        return ResponseEntity.ok(response);
+    	profissionalSaudeService.cadastrarProfissional(dto);
+        return ResponseEntity.ok("Funcionario cadastrado com sucesso.");
     }
+    
+    @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> alterarProfissional(@RequestBody ProfissionalSaudeDto dto) {
+        
+    	profissionalSaudeService.cadastrarProfissional(dto);
+        return ResponseEntity.ok("Funcionario atualizado com sucesso.");
+    }
+    
+    //TODO: Criar PUT
 }

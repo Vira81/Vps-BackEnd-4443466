@@ -66,7 +66,17 @@ public class DataInitializer {
                     .nome("Hospital Vida")
                     .build();
             hospitalRepository.save(hospital);
+            
+            HospitalEntity hospital2 = HospitalEntity.builder()
+                    .nome("Hospital Viva Melhor")
+                    .build();
+            hospitalRepository.save(hospital2);
 
+            HospitalEntity hospital3 = HospitalEntity.builder()
+                    .nome("Hospital Centro")
+                    .build();
+            hospitalRepository.save(hospital3);
+            
             // Profissional Saude
             UsuarioEntity profissionalUser = UsuarioEntity.builder()
                     .email("prof@vida.com")

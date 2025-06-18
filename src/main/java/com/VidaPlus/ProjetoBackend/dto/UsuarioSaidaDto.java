@@ -6,6 +6,7 @@ import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.EspecialidadeSaude;
+import com.VidaPlus.ProjetoBackend.entity.enums.FuncaoSaude;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -31,7 +32,7 @@ public class UsuarioSaidaDto {
 	
 	private LocalDate nascimento;
 	
-	private Long profissional;
+	private FuncaoSaude funcao;
 	
 	private EspecialidadeSaude especialidade;
 	
@@ -52,7 +53,7 @@ public class UsuarioSaidaDto {
 	        ProfissionalSaudeEntity prof = pessoa.getProfissionalSaude();
 	        if (prof != null) {
 	            this.crm = prof.getCrm();
-	            this.profissional = prof.getId();
+	            this.funcao = prof.getFuncao();
 	            this.especialidade = prof.getEspecialidade();
 	        }
 	    }

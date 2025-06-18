@@ -15,6 +15,11 @@ public class UserDetailServiceImpl implements UserDetailsService{
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
+	/**
+	 * Metodo antigo para descobrir o usuario logado.
+	 * novo ->"getUsuarioLogado"
+	 * TODO: Excluir
+	 */
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 	    UsuarioEntity usuario = usuarioRepository.findByEmail(email)

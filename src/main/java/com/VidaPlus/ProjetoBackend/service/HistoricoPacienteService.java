@@ -2,7 +2,6 @@ package com.VidaPlus.ProjetoBackend.service;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +37,12 @@ public class HistoricoPacienteService {
 	@Autowired
 	private PessoaRepository pessoaRepository;
 
+	/**
+	 * Atualiza o histórico do paciente no momento que uma consulta é marcada como realizada
+	 */
 	public void registrarEntradaConsulta(PessoaEntity paciente, ProfissionalSaudeEntity profissional, String descricao,
 			ConsultaEntity consulta) {
+		// Cria o historico se não existe ainda
 		HistoricoPacienteEntity historico = historicoPacienteRepository.findByPaciente(paciente)
 				.orElseGet(() -> criarNovoHistorico(paciente));
 
@@ -58,6 +61,9 @@ public class HistoricoPacienteService {
 		historicoPacienteRepository.save(historico);
 	}
 
+	/**
+	 * Criação de um novo histórico do paciente
+	 */
 	private HistoricoPacienteEntity criarNovoHistorico(PessoaEntity paciente) {
 		HistoricoPacienteEntity historico = new HistoricoPacienteEntity();
 		historico.setPaciente(paciente);
@@ -66,6 +72,9 @@ public class HistoricoPacienteService {
 		return historico;
 	}
 
+	/**
+	 * Busca o histórico do paciente logado
+	 */
 	public HistoricoPacienteDto buscarHistoricoPaciente() {
 		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
 
@@ -78,6 +87,10 @@ public class HistoricoPacienteService {
 		return historicoSaida(historico);
 	}
 
+	/**
+	 * Organiza a informação do histórico
+	 * Retorna a lista com histórico
+	 */
 	private HistoricoPacienteDto historicoSaida(HistoricoPacienteEntity entity) {
 		List<NovoHistoricoPacienteDto> entradas = entity.getEntradas().stream().map(entrada -> {
 			NovoHistoricoPacienteDto dto = new NovoHistoricoPacienteDto();
@@ -86,6 +99,7 @@ public class HistoricoPacienteService {
 			dto.setTipo(entrada.getTipo());
 			dto.setNomeProfissional(entrada.getProfissionalResponsavel().getPessoa().getNome());
 
+			// Prontuario , Prescrição existe
 			if (entrada.getConsulta() != null && entrada.getConsulta().getProntuario() != null) {
 				ProntuarioEntity prontuario = entrada.getConsulta().getProntuario();
 				dto.setDiagnostico(prontuario.getDiagnostico());
@@ -107,6 +121,9 @@ public class HistoricoPacienteService {
 		return dto;
 	}
 
+	/**
+	 * Criação do PDF do histórico
+	 */
 	public byte[] gerarPdfHistoricoPaciente(HistoricoPacienteDto historico) {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -122,7 +139,7 @@ public class HistoricoPacienteService {
 
 		List<NovoHistoricoPacienteDto> entradas = historico.getEntradas();
 
-//Imprimi a lista
+		//Imprimi a lista
 		for (NovoHistoricoPacienteDto entrada : entradas) {
 			document.add(new Paragraph(
 					"Data: " + entrada.getDataEntrada()));

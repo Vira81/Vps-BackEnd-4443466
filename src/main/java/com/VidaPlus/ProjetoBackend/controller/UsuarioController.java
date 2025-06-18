@@ -18,9 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.VidaPlus.ProjetoBackend.dto.EmailAlterarDto;
+import com.VidaPlus.ProjetoBackend.dto.SenhaAlterarDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioCadastroDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioPerfilDto;
+import com.VidaPlus.ProjetoBackend.dto.UsuarioSaidaDto;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 import com.VidaPlus.ProjetoBackend.service.UsuarioService;
@@ -49,23 +52,14 @@ public class UsuarioController {
 		return ResponseEntity.ok(novoUsuario);
 	}
 	
-	
-
-	/**
-	 * Cria um novo usuário.
-	 */
-	@PostMapping
-	public ResponseEntity<UsuarioEntity> criarUsuario(@RequestBody UsuarioDto dto) {
-		UsuarioEntity salvo = usuarioService.criar(dto);
-		return ResponseEntity.ok(salvo);
-	}
 
 	/**
 	 * Busca um usuário por ID.
 	 */
 	@GetMapping("/{id}")
-	public ResponseEntity<UsuarioEntity> buscarPorId(@PathVariable Long id) {
-		UsuarioEntity usuario = usuarioService.buscarPorId(id);
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<UsuarioSaidaDto> buscarPorId(@PathVariable Long id) {
+		UsuarioSaidaDto usuario = usuarioService.buscarPorId(id);
 		return ResponseEntity.ok(usuario);
 	}
 
@@ -73,19 +67,27 @@ public class UsuarioController {
 	 * Lista todos os usuários.
 	 */
 	@GetMapping
-	public ResponseEntity<List<UsuarioEntity>> listarTodos() {
-		List<UsuarioEntity> usuarios = usuarioService.listarTodos();
-		return ResponseEntity.ok(usuarios);
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<UsuarioSaidaDto>> listarTodos() {
+	    return ResponseEntity.ok(usuarioService.listarTodosUsuarios());
 	}
 
 	/**
 	 * Atualiza os dados de um usuário existente.
 	 */
-	@PutMapping("/{id}")
-	public ResponseEntity<UsuarioEntity> atualizar(@PathVariable Long id, @RequestBody UsuarioDto dto) {
-		UsuarioEntity atualizado = usuarioService.atualizar(id, dto);
-		return ResponseEntity.ok(atualizado);
+	@PutMapping("/atualizar_email")
+	public ResponseEntity<String> atualizarEmail(@ Valid @RequestBody EmailAlterarDto dto) {
+	    usuarioService.atualizarEmail(dto);
+	    return ResponseEntity.ok("Email atualizado com sucesso");
 	}
+	
+	@PutMapping("/atualizar_senha")
+	public ResponseEntity<String> atualizarSenha(@ Valid @RequestBody SenhaAlterarDto dto) {
+	    usuarioService.atualizarSenha(dto);
+	    return ResponseEntity.ok("Senha atualizada com sucesso");
+	}
+	
+	
 
 	/**
 	 * Remove um usuário pelo ID.

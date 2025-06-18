@@ -20,6 +20,10 @@ public class ProntuarioService {
 	@Autowired
 	private ProntuarioRepository prontuarioRepository;
 
+	/**
+	 * Cria o prontuario
+	 * Obrigatório no momento da realização da consulta
+	 */
 	public void gerarProntuario(ConsultaEntity consulta, RealizarConsultaDto dto) {
 	    ProntuarioEntity prontuario = new ProntuarioEntity();
 	    prontuario.setConsulta(consulta);
@@ -32,6 +36,10 @@ public class ProntuarioService {
 	    prontuarioRepository.save(prontuario);
 	}
 	
+	/**
+	 * Gera o PDF do prontuário
+	 * 
+	 */
 	public byte[] gerarPdfProntuario(ProntuarioEntity prontuario) {
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
 

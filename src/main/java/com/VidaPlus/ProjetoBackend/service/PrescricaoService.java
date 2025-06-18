@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.VidaPlus.ProjetoBackend.dto.PrescricaoDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.PrescricaoEntity;
-import com.VidaPlus.ProjetoBackend.entity.ProntuarioEntity;
 import com.VidaPlus.ProjetoBackend.repository.PrescricaoRepository;
 import com.lowagie.text.Document;
 import com.lowagie.text.Paragraph;
@@ -20,6 +19,12 @@ public class PrescricaoService {
 	@Autowired
 	private PrescricaoRepository prescricaoRepository;
 
+	/**
+	 * Cria a prescrição. (Opcional)
+	 * 
+	 * TODO: Adicionar uma checagem para permitir que a prescrição 
+	 *  seja criada somente em consulta marcadas como Realizada
+	 **/
 	public void gerarPrescricao(ConsultaEntity consulta, PrescricaoDto dto)  {
 	    PrescricaoEntity prescricao = new PrescricaoEntity();
 	    prescricao.setConsulta(consulta);
@@ -33,6 +38,9 @@ public class PrescricaoService {
 	    prescricaoRepository.save(prescricao);
 	}
 	
+	/**
+	 * Gera o PDF da prescrição
+	 */
 	public byte[] gerarPdfPrescricao(PrescricaoEntity prescricao) {
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
 

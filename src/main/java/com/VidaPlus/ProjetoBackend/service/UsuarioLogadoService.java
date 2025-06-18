@@ -10,12 +10,15 @@ import org.springframework.stereotype.Component;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 
-//pega o usuario logado
+
 @Component
 public class UsuarioLogadoService {
 	@Autowired
     private UsuarioRepository usuarioRepository;
-    public UsuarioEntity getUsuarioLogado() {
+    /**
+     * Informações do usuario logado
+     */
+	public UsuarioEntity getUsuarioLogado() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {

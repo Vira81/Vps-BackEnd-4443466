@@ -23,6 +23,12 @@ public class ProfissionalSaudeService {
     @Autowired
     private PessoaRepository pessoaRepository;
 
+    /**
+     * Admin salva os dados do profissional de saude.
+     * O perfil tem que estar como profissional primeiro.
+     * TODO: Alterar para que não seja preciso usar "atualizarPerfil" primeiro
+     * TODO: Expandir com mais informações.
+     */
     public ProfissionalSaudeDto cadastrarProfissional(ProfissionalSaudeDto dto) {
         UsuarioEntity usuario = usuarioRepository.findById(dto.getUsuarioId())
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));

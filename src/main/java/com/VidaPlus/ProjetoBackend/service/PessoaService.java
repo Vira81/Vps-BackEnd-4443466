@@ -13,6 +13,10 @@ public class PessoaService {
     @Autowired
     private PessoaRepository pessoaRepository;
 
+    /**
+     * Atualiza os dados pessoais do usuario.
+     * Por padrão todos os campos são null, no momento que o usuario foi criado.
+     */
     public PessoaEntity atualizarPessoa(Long id, PessoaDto dto) {
         PessoaEntity pessoa = pessoaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pessoa não encontrada"));

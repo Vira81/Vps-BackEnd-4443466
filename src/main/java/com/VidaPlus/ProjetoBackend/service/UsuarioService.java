@@ -10,14 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.VidaPlus.ProjetoBackend.dto.EmailAlterarDto;
+import com.VidaPlus.ProjetoBackend.dto.SenhaAlterarDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioCadastroDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioPerfilDto;
+import com.VidaPlus.ProjetoBackend.dto.UsuarioSaidaDto;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
@@ -35,70 +37,77 @@ import lombok.RequiredArgsConstructor;
 
 public class UsuarioService {
 	private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private PessoaRepository pessoaRepository;
+
+	@Autowired
+	private UsuarioLogadoService login;
 
 	/**
-	 * Criação do usuario Um usuario comum só pode criar logins do tipo PACIENTE e
-	 * PENDENTE TODO: criar(dto) não está sendo usado
-	 *
-	 **/
-	public UsuarioEntity criar(UsuarioDto dto) {
-		logger.info("Tentando criar usuário com e-mail: {}", dto.getEmail());
-
-		if (usuarioRepository.existsByEmail(dto.getEmail())) {
-			logger.warn("Usuário com e-mail {} já está cadastrado", dto.getEmail());
-			throw new RuntimeException("E-mail já cadastrado");
-		}
-
-		if (dto.getSenhaHash() == null || dto.getSenhaHash().isBlank()) {
-			logger.error("Senha nula ou vazia para o e-mail: {}", dto.getEmail());
-			throw new IllegalArgumentException("A senha não pode ser nula ou vazia");
-		}
-
-		UsuarioEntity usuario = UsuarioEntity.builder().email(dto.getEmail())
-				.senhaHash(passwordEncoder.encode(dto.getSenhaHash()))
-				.perfil(dto.getPerfil() != null ? dto.getPerfil() : PerfilUsuario.PACIENTE)
-				.status(dto.getStatus() != null ? dto.getStatus() : StatusUsuario.PENDENTE)
-				.dataCriacao(LocalDateTime.now()).build();
-
-		UsuarioEntity salvo = usuarioRepository.save(usuario);
-		logger.info("Usuário criado com ID: {}", salvo.getId());
-
-		return salvo;
-	}
-
-	// Buscar por ID
-	public UsuarioEntity buscarPorId(Long id) {
-		return usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
-	}
-
-	// Listar todos usuarios
-	public List<UsuarioEntity> listarTodos() {
-		return usuarioRepository.findAll();
-	}
-
-	// Atualizar usuario
-	public UsuarioEntity atualizar(Long id, UsuarioDto dto) {
-		UsuarioEntity usuario = buscarPorId(id);
+	 * O usuario altera o email usado para logar
+	 * O token antigo será invalido, logar usando o email novo.
+	 */
+	public ResponseEntity<?> atualizarEmail(EmailAlterarDto dto) {
+		UsuarioEntity usuario = buscarId(login.getUsuarioLogado().getId());
 
 		if (dto.getEmail() != null && !dto.getEmail().equals(usuario.getEmail())) {
 			if (usuarioRepository.existsByEmail(dto.getEmail())) {
-				throw new RuntimeException("E-mail já está em uso");
+				throw new EmailJaCadastradoException("E-mail já está em uso");
 			}
 			usuario.setEmail(dto.getEmail());
 		}
 
-		if (dto.getPerfil() != null) {
-			usuario.setPerfil(dto.getPerfil());
-		}
-
-		return usuarioRepository.save(usuario);
+		usuarioRepository.save(usuario);
+		return ResponseEntity.ok("Email atualizado com sucesso");
 	}
 
+	// Buscar Usuario por Id
+	public UsuarioEntity buscarId(Long id) {
+		return usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+	}
+	
+	/**
+	 * Buscar Usuario por Id
+	 * Usado para controlar a saida de dados sensiveis
+	 */
+	public UsuarioSaidaDto buscarPorId(Long id) {
+		UsuarioEntity usuario = usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+		return new UsuarioSaidaDto(usuario);
+	}
+
+	/**
+	 * Lista todos os usuarios
+	 * usando o Dto de saida
+	 */
+	@Transactional
+	public List<UsuarioSaidaDto> listarTodosUsuarios() {
+	    List<UsuarioEntity> usuarios = usuarioRepository.findAllSaida(); 
+	    return usuarios.stream()
+	                   .map(UsuarioSaidaDto::new)
+	                   .toList();
+	}
+
+
+	public ResponseEntity<?> atualizarSenha(SenhaAlterarDto dto) {
+		UsuarioEntity usuario = buscarId(login.getUsuarioLogado().getId());
+		
+		//usuario.setSenhaHash(passwordEncoder.encode(novaSenha));
+
+		usuarioRepository.save(usuario);
+		return ResponseEntity.ok("Senha atualizada com sucesso");
+	}
+	
 	// Atualizar senha
 	public void alterarSenha(Long id, String novaSenha) {
-		UsuarioEntity usuario = buscarPorId(id);
-		usuario.setSenhaHash(passwordEncoder.encode(novaSenha));
-		usuarioRepository.save(usuario);
+	//	UsuarioEntity usuario = buscarId(id);
+	//	usuario.setSenhaHash(passwordEncoder.encode(novaSenha));
+	//	usuarioRepository.save(usuario);
 	}
 
 	/**
@@ -125,15 +134,6 @@ public class UsuarioService {
 		usuario.setUltimoAcesso(LocalDateTime.now());
 		usuarioRepository.save(usuario);
 	}
-
-	@Autowired
-	private UsuarioRepository usuarioRepository;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	private PessoaRepository pessoaRepository;
 
 	public UsuarioEntity cadastrarNovoUsuario(UsuarioCadastroDto dto) {
 		if (usuarioRepository.existsByEmail(dto.getEmail())) {

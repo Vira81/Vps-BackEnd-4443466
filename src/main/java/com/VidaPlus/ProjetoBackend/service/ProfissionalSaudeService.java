@@ -1,17 +1,22 @@
 package com.VidaPlus.ProjetoBackend.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.VidaPlus.ProjetoBackend.dto.BuscaEspecialidadeDto;
 import com.VidaPlus.ProjetoBackend.dto.ProfissionalSaudeDto;
 import com.VidaPlus.ProjetoBackend.entity.HospitalEntity;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
+import com.VidaPlus.ProjetoBackend.entity.enums.EspecialidadeSaude;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.exception.AlteracaoIndevida;
 import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
@@ -87,4 +92,42 @@ public class ProfissionalSaudeService {
 
 		return profissionalSaudeRepository.save(profissional);
 	}
+	
+
+	// Busca informações do medico por Especialidade
+	public List<BuscaEspecialidadeDto> buscarPorEspecialidade(EspecialidadeSaude especialidade) {
+        List<ProfissionalSaudeEntity> lista = profissionalSaudeRepository.findByEspecialidade(especialidade);
+
+        return lista.stream()
+                    .map(this::buscaEspecialidadeSaida)
+                    .collect(Collectors.toList());
+    }
+    
+    // Saida da busca por especialidade
+	public BuscaEspecialidadeDto buscaEspecialidadeSaida(ProfissionalSaudeEntity entity) {
+    	BuscaEspecialidadeDto dto = new BuscaEspecialidadeDto();
+      
+        dto.setEspecialidade(entity.getEspecialidade());
+        dto.setCrm(entity.getCrm());
+        
+
+        if (entity.getPessoa() != null) {
+            dto.setMedico(entity.getPessoa().getNome());
+        }
+        
+        if (entity.getHospitais() != null) {
+            List<String> nomesHospitais = entity.getHospitais()
+                                                .stream()
+                                                .map(HospitalEntity::getNome)
+                                                .collect(Collectors.toList());
+            dto.setHospitais(nomesHospitais);
+        }
+
+        if (entity.getDiasTrabalho() != null) {
+            dto.setDiasAtendimento(new ArrayList<>(entity.getDiasTrabalho()));
+        }
+
+
+        return dto;
+    }
 }

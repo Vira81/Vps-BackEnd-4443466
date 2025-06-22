@@ -36,6 +36,13 @@ public class HospitalEntity {
 	@Column
 	private String nome;
 
+	@Column
+	private String telefone;
+	
+	@Column
+	private String endereco;
+	
+	
 	public HospitalEntity(HospitalEntity usuario) {
 		BeanUtils.copyProperties(usuario, this);
 	}

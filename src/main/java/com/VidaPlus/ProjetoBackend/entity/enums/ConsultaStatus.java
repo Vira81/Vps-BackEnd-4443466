@@ -5,6 +5,7 @@ public enum ConsultaStatus {
     CANCELADA_PACIENTE,
     CANCELADA_PROFISSIONAL,
     CANCELADA_OUTRO_MOTIVO,
-    REALIZADA
+    REALIZADA,
+    EXPIRADA
     
 }

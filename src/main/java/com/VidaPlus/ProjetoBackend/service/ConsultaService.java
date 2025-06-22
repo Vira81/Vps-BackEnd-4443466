@@ -1,10 +1,10 @@
 package com.VidaPlus.ProjetoBackend.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
@@ -16,11 +16,8 @@ import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.ConsultaStatus;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
-import com.VidaPlus.ProjetoBackend.exception.EmailJaCadastradoException;
 import com.VidaPlus.ProjetoBackend.repository.ConsultaRepository;
-import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
-import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
-import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
@@ -31,15 +28,6 @@ public class ConsultaService {
 	private ConsultaRepository consultaRepository;
 
 	@Autowired
-	private ProfissionalSaudeRepository profissionalRepository;
-
-	@Autowired
-	private PessoaRepository pessoaRepository;
-
-	@Autowired
-	private HospitalRepository hospitalRepository;
-
-	@Autowired
 	private ProntuarioService prontuarioService;
 
 	@Autowired
@@ -48,6 +36,9 @@ public class ConsultaService {
 	@Autowired
 	private UsuarioLogadoService usuarioLogadoService;
 
+	@Autowired
+	private ExisteService existe;
+	
 	/**
 	 * Cria uma consulta com Status Agendada
 	 * Verifica se os Ids informados são adequados 
@@ -56,23 +47,33 @@ public class ConsultaService {
 	@Transactional
 	public ConsultaEntity criarConsulta(ConsultaDto dto) {
 
-		// Profissional existe
-		ProfissionalSaudeEntity profissional = profissionalRepository.findById(dto.getProfissionalId())
-				.orElseThrow(() -> new RuntimeException("Profissional não encontrado."));
-
+		// Valida pelo Id
+		ProfissionalSaudeEntity profissional = existe.profissionalSaude(dto.getProfissionalId());
+		PessoaEntity paciente = existe.paciente(dto.getPacienteId());
+		HospitalEntity hospital = existe.hospital(dto.getHospitalId());
+		
 		// Perfil Profissional
 		if (profissional.getUsuario().getPerfil() != PerfilUsuario.PROFISSIONAL) {
 			throw new RuntimeException("Usuário não é profissional de saude.");
 		}
 
-		// Paciente existe
-		PessoaEntity paciente = pessoaRepository.findById(dto.getPacienteId())
-				.orElseThrow(() -> new RuntimeException("Paciente não encontrado."));
-
-		// Hospital existe
-		HospitalEntity hospital = hospitalRepository.findById(dto.getHospitalId())
-				.orElseThrow(() -> new RuntimeException("Hospital não existe."));
-
+		// Medico trabalha no hospital
+		if (!profissional.getHospitais().stream()
+		        .anyMatch(h -> h.getId().equals(dto.getHospitalId()))) {
+		    throw new RuntimeException("Este profissional não atende no hospital informado.");
+		}
+		
+		// Medico trabalha no dia 
+		if (!profissional.getDiasTrabalho().contains(dto.getDia().getDayOfWeek()))  {
+			throw new RuntimeException("O "+ profissional.getFuncao() + " não está disponível nesse dia. " + dto.getDia().getDayOfWeek());
+		}
+		
+		// Data no passado
+		if (dto.getDia().isBefore(LocalDate.now())) {
+		    throw new RuntimeException("A data informada já passou.");
+		}
+		
+		
 		// Salva a consulta com Status Agendada
 		ConsultaEntity novaConsulta = ConsultaEntity.builder().profissional(profissional).paciente(paciente)
 				.hospital(hospital).dia(dto.getDia()).hora(dto.getHora()).statusConsulta(ConsultaStatus.AGENDADA)
@@ -99,14 +100,13 @@ public class ConsultaService {
 	 **/
 	public void realizarConsulta(Long consultaId, RealizarConsultaDto dto) {
 		// Consulta existe
-		ConsultaEntity consulta = consultaRepository.findById(consultaId)
-				.orElseThrow(() -> new EmailJaCadastradoException("Consulta não encontrada."));
+		ConsultaEntity consulta = existe.consulta(consultaId);
 
-		// Identificação do Paciente
-		String emailLogado = SecurityContextHolder.getContext().getAuthentication().getName();
+		// Identificação do Profissional
+		UsuarioEntity usuarioLogado = usuarioLogadoService.getUsuarioLogado();
 
 		// Profissional é responsável pela consulta
-		if (!consulta.getProfissional().getUsuario().getEmail().equals(emailLogado)) {
+		if (!consulta.getProfissional().getUsuario().getId().equals(usuarioLogado.getId())) {
 			throw new AccessDeniedException("Você não tem permissão para alterar esta consulta.");
 		}
 
@@ -115,11 +115,17 @@ public class ConsultaService {
 			throw new IllegalStateException("Esta consulta já foi finalizada.");
 		}
 
-		// Consulta foi cancelada
+		// Consulta foi cancelada ou expirou
 		if (!consulta.getStatusConsulta().equals(ConsultaStatus.AGENDADA)) {
-			throw new IllegalStateException("Esta consulta foi cancelada: " + consulta.getStatusConsulta());
+			throw new IllegalStateException("Esta consulta não está mais disponivel: " + consulta.getStatusConsulta());
 		}
 
+		// Dia da consulta (Desativado)
+		//  
+		//if (!consulta.getDia().isEqual(LocalDate.now())) {
+		//	throw new IllegalStateException("Esta consulta não está agendada para hoje.");
+		//}
+		
 		// Atualiza a consulta
 		consulta.setStatusConsulta(ConsultaStatus.REALIZADA);
 		consulta.setDataRealizada(LocalDateTime.now());
@@ -139,12 +145,11 @@ public class ConsultaService {
 
 	/**
 	 * Paciente pede o cancelamento da consulta
-	 * TODO: Aplicar regras para o cancelamento
+	 * 
 	 */
 	public void cancelarConsultaPaciente(Long consultaId) {
 		// Consulta existe
-		ConsultaEntity consulta = consultaRepository.findById(consultaId)
-				.orElseThrow(() -> new EntityNotFoundException("Consulta não encontrada"));
+		ConsultaEntity consulta = existe.consulta(consultaId);
 
 		// Identificação do Paciente
 		UsuarioEntity usuarioLogado = usuarioLogadoService.getUsuarioLogado();
@@ -157,6 +162,11 @@ public class ConsultaService {
 		// Consulta está Agendada
 		if (!consulta.getStatusConsulta().equals(ConsultaStatus.AGENDADA)) {
 			throw new IllegalStateException("Apenas consultas agendadas podem ser canceladas.");
+		}
+		
+		// Prazo de 24horas para cancelar
+		if (!consulta.getDia().isEqual(LocalDate.now())) {
+			throw new IllegalStateException("Prazo para cancelamento de consulta acabou.");
 		}
 
 		// Marca como cancelada

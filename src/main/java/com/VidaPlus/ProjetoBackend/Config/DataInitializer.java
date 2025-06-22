@@ -24,7 +24,7 @@ import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 /**
  * Inicia dados no banco
  */
-@Configuration
+//@Configuration
 public class DataInitializer {
 
     @Bean

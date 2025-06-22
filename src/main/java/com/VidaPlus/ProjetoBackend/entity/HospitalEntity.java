@@ -1,5 +1,7 @@
 package com.VidaPlus.ProjetoBackend.entity;
 
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 
 import jakarta.persistence.Column;
@@ -7,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +44,9 @@ public class HospitalEntity {
 	
 	@Column
 	private String endereco;
+	
+	@OneToMany(mappedBy = "hospital")
+	private List<LeitoEntity> leitos;
 	
 	
 	public HospitalEntity(HospitalEntity usuario) {

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.VidaPlus.ProjetoBackend.dto.RealizarConsultaDto;
+import com.VidaPlus.ProjetoBackend.dto.ProntuarioDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProntuarioEntity;
 import com.VidaPlus.ProjetoBackend.repository.ProntuarioRepository;
@@ -24,7 +24,7 @@ public class ProntuarioService {
 	 * Cria o prontuario
 	 * Obrigatório no momento da realização da consulta
 	 */
-	public void gerarProntuario(ConsultaEntity consulta, RealizarConsultaDto dto) {
+	public void gerarProntuario(ConsultaEntity consulta, ProntuarioDto dto) {
 	    ProntuarioEntity prontuario = new ProntuarioEntity();
 	    prontuario.setConsulta(consulta);
 	    prontuario.setPaciente(consulta.getPaciente());

@@ -18,17 +18,21 @@ import jakarta.validation.Valid;
 @CrossOrigin
 public class PessoaController {
 
-    @Autowired
-    private PessoaService pessoaService;
+	@Autowired
+	private PessoaService pessoaService;
 
-    /**
-     * O usuario somente pode alterar os proprios dados
-     * TODO: Fazer isso tambem para Usuario (login)
-     */
-    @PutMapping
-    public ResponseEntity<String> atualizarPessoa(@Valid @RequestBody PessoaNotNullDto dto) {
+	/**
+	 * Atualiza os dados pessoais do usuario
+	 * 
+	 * PUT http://localhost:8080/dados_pessoais
+	 * { "nome": "Mario Mario", "cpf": "444.456.444-33", 
+	 * "telefone": "(44)99999-0000", "dataNascimento": "1985-09-13" }
+	 * 
+	 */
+	@PutMapping
+	public ResponseEntity<String> atualizarPessoa(@Valid @RequestBody PessoaNotNullDto dto) {
 
-        pessoaService.atualizarPessoa(dto);
-        return ResponseEntity.ok("Dados Atualizados com sucesso!");
-    }
+		pessoaService.atualizarPessoa(dto);
+		return ResponseEntity.ok("Dados Atualizados com sucesso!");
+	}
 }

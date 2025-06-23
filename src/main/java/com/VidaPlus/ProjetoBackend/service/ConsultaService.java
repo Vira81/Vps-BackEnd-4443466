@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
 import com.VidaPlus.ProjetoBackend.dto.ConsultaGetDto;
-import com.VidaPlus.ProjetoBackend.dto.RealizarConsultaDto;
+import com.VidaPlus.ProjetoBackend.dto.ProntuarioDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.HospitalEntity;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
@@ -161,13 +161,13 @@ public class ConsultaService {
 
 
 	/**
-	 * Funcionario atende o Paciente.
+	 * Profissional atende o Paciente.
 	 * Marca a consulta como realizada.
 	 * Cria o prontuario.
 	 * Cria/Atualiza histórico do Paciente
 	 * TODO: Melhorar exception
 	 **/
-	public void realizarConsulta(Long consultaId, RealizarConsultaDto dto) {
+	public void realizarConsulta(Long consultaId, ProntuarioDto dto) {
 		// Consulta existe
 		ConsultaEntity consulta = existe.consulta(consultaId);
 

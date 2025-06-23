@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
 import com.VidaPlus.ProjetoBackend.dto.ConsultaGetDto;
 import com.VidaPlus.ProjetoBackend.dto.PrescricaoDto;
-import com.VidaPlus.ProjetoBackend.dto.RealizarConsultaDto;
+import com.VidaPlus.ProjetoBackend.dto.ProntuarioDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
@@ -171,18 +171,28 @@ public class ConsultaController {
 	}
 
 	/**
-	 * Atendimento da consulta
+	 * Atendimento da consulta , é necessario enviar dados para a 
+	 * Criação do prontuario
+	 * 
+	 * Profissional
+	 * POST http://localhost:8080/consulta/1/atender
+	 * { "diagnostico": "Dolor",
+	 * "observacao": "sit amet"}
 	 */
 	@PostMapping("/{consultaId}/atender")
 	@PreAuthorize("hasRole('PROFISSIONAL')")
-	public ResponseEntity<?> atenderConsulta(@PathVariable Long consultaId,
-			@RequestBody @Valid RealizarConsultaDto dto) {
+	public ResponseEntity<?> atenderConsulta(@Valid @PathVariable Long consultaId,
+			@RequestBody @Valid ProntuarioDto dto) {
 		consultaService.realizarConsulta(consultaId, dto);
 		return ResponseEntity.ok("Consulta realizada.");
 	}
 
 	/**
-	 * Prescricao
+	 * Prescricao , não é obrigatória para a consulta, historico, etc
+	 * 
+	 * Profissional
+	 * POST http://localhost:8080/consulta/1/atender/prescricao
+	 * {  "medicacao": "Ipsum,",  "posologia": "consectetur"}
 	 */
 	@PostMapping("/{consultaId}/atender/prescricao")
 	@PreAuthorize("hasRole('PROFISSIONAL')")

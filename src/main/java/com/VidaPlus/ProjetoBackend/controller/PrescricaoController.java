@@ -11,12 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.VidaPlus.ProjetoBackend.entity.PrescricaoEntity;
-import com.VidaPlus.ProjetoBackend.entity.ProntuarioEntity;
 import com.VidaPlus.ProjetoBackend.exception.EmailJaCadastradoException;
 import com.VidaPlus.ProjetoBackend.repository.PrescricaoRepository;
-import com.VidaPlus.ProjetoBackend.repository.ProntuarioRepository;
 import com.VidaPlus.ProjetoBackend.service.PrescricaoService;
-import com.VidaPlus.ProjetoBackend.service.ProntuarioService;
 
 //TODO: Implementar Get normal
 @RestController
@@ -31,6 +28,11 @@ public class PrescricaoController {
 	@Autowired
 	private PrescricaoService prescricaoService;
 	
+	/**
+	 * Gera pdf da prescrição para impressao
+	 * 
+	 * GET http://localhost:8080/prescricao/1/pdf
+	 */
 	@GetMapping("/{id}/pdf")
 	public ResponseEntity<byte[]> gerarPdf(@PathVariable Long id) {
 		PrescricaoEntity prontuario = prescricaoRepository.findById(id)

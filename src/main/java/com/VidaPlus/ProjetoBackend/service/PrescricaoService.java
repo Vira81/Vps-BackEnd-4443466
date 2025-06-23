@@ -48,8 +48,12 @@ public class PrescricaoService {
 	    PdfWriter.getInstance(document, out);
 	    document.open();
 
+	    
+	    document.add(new Paragraph(prescricao.getConsulta().getHospital().getNome()));
+	    document.add(new Paragraph("Endereço: " + prescricao.getConsulta().getHospital().getEndereco()));
+	    document.add(new Paragraph("Tel: " + prescricao.getConsulta().getHospital().getTelefone()));
+	    document.add(new Paragraph(" "));
 	    document.add(new Paragraph("PRESCRIÇÃO"));
-	    document.add(new Paragraph("Hospital: " + prescricao.getConsulta().getHospital().getNome()));
 	    document.add(new Paragraph("Paciente: " + prescricao.getPaciente().getNome()));
 	    document.add(new Paragraph("Medico: " + prescricao.getProfissional().getPessoa().getNome()));
 	    document.add(new Paragraph("Data: " + prescricao.getDataCriacao()));

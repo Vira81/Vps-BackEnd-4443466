@@ -20,7 +20,6 @@ import com.VidaPlus.ProjetoBackend.entity.enums.EspecialidadeSaude;
 import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.exception.AlteracaoIndevida;
 import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
-import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
 import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 
@@ -36,13 +35,13 @@ public class ProfissionalSaudeService {
 	@Autowired
 	private HospitalRepository hospitalRepository;
 
-	@Autowired
-	private PessoaRepository pessoaRepository;
 
 	/**
 	 * Admin salva os dados do profissional de saude.
 	 * 
-	 * 
+	 * Comportamento: Um admin pode virar profissional de saude e se manter
+	 * como admin. TODO: Verificar se o Admin-Profissional tem as permissões
+	 * para as duas funções.
 	 */
 	public ProfissionalSaudeEntity cadastrarProfissional(ProfissionalSaudeDto dto) {
 		// Busca por CPF
@@ -57,6 +56,7 @@ public class ProfissionalSaudeService {
 		}
 
 		// Altera o tipo automaticamente se for paciente
+		// Não muda se for Admin
 		if (usuario.getPerfil() == PerfilUsuario.PACIENTE) {
 			usuario.setPerfil(PerfilUsuario.PROFISSIONAL);
 

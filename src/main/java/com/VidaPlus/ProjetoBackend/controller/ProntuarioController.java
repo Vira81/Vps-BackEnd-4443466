@@ -28,6 +28,11 @@ public class ProntuarioController {
 	@Autowired
 	private ProntuarioService prontuarioService;
 	
+	/**
+	 * Gera pdf do prontuario
+	 * 
+	 * GET http://localhost:8080/prescricao/1/pdf
+	 */
 	@GetMapping("/{id}/pdf")
 	public ResponseEntity<byte[]> gerarPdf(@PathVariable Long id) {
 		ProntuarioEntity prontuario = prontuarioRepository.findById(id)

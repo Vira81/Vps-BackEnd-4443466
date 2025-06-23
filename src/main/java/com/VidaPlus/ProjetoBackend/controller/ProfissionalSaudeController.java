@@ -16,24 +16,35 @@ import com.VidaPlus.ProjetoBackend.service.ProfissionalSaudeService;
 @RequestMapping("/profissional")
 public class ProfissionalSaudeController {
 
-    @Autowired
-    private ProfissionalSaudeService profissionalSaudeService;
+	@Autowired
+	private ProfissionalSaudeService profissionalSaudeService;
 
-    @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> criarProfissional(@RequestBody ProfissionalSaudeDto dto) {
-        
-    	profissionalSaudeService.cadastrarProfissional(dto);
-        return ResponseEntity.ok("Funcionario cadastrado com sucesso.");
-    }
-    
-    @PutMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> alterarProfissional(@RequestBody ProfissionalSaudeDto dto) {
-        
-    	profissionalSaudeService.cadastrarProfissional(dto);
-        return ResponseEntity.ok("Funcionario atualizado com sucesso.");
-    }
-    
-    //TODO: Criar PUT
+	/**
+	 * Administrador altera o perfil de um usuario e cadastra as informações do
+	 * profissional
+	 * 
+	 * Cadastra POST http://localhost:8080/profissional
+	 * 
+	 * Altera PUT http://localhost:8080/profissional
+	 * 
+	 * { "cpf": "00000000000", "especialidade": "CARDIOLOGIA", "funcao": "MEDICA",
+	 * "crm": "1234567", "diasTrabalho": ["MONDAY", "WEDNESDAY", "FRIDAY"],
+	 * "hospitaisIds": [1, 2, 3] }
+	 */
+	@PostMapping
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<String> criarProfissional(@RequestBody ProfissionalSaudeDto dto) {
+
+		profissionalSaudeService.cadastrarProfissional(dto);
+		return ResponseEntity.ok("Funcionario cadastrado com sucesso.");
+	}
+
+	@PutMapping
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<String> alterarProfissional(@RequestBody ProfissionalSaudeDto dto) {
+
+		profissionalSaudeService.cadastrarProfissional(dto);
+		return ResponseEntity.ok("Funcionario atualizado com sucesso.");
+	}
+
 }

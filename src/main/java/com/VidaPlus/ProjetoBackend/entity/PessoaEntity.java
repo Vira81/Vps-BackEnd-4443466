@@ -40,7 +40,7 @@ import lombok.Setter;
 
 public class PessoaEntity {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 
 	@Column

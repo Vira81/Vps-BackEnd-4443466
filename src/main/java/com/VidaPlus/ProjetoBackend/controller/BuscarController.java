@@ -20,6 +20,13 @@ public class BuscarController {
 	private ProfissionalSaudeService service;
 
 	
+	/**
+	 * Buscar por especialidade medica , onde {especialidade} é o termo da busca
+	 * Ex.: cardiologia, pediatria, etc.
+	 * 
+	 * GET http://localhost:8080/busca/cardiologia
+	 * 
+	 */
 	@GetMapping("/{especialidade}")
 	public ResponseEntity<List<BuscaEspecialidadeDto>> buscarPorEspecialidade(@PathVariable String especialidade) {
 	    try {

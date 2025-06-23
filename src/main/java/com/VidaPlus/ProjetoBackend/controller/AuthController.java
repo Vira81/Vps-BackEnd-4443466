@@ -23,11 +23,12 @@ public class AuthController {
 	private AuthService authService;
 	
 	/**
-	 * Pagina de Login
+	 * Pagina de Login , onde username é o e-mail
 	 * POST http://localhost:8080/auth/login
-	 * 
-	 * É necessario usar usename , password no JSON
-	 * 
+	 * {
+	 * "username": "usuario@login.com",
+	 * "password": "senha123"
+	 * }
 	 */
 	@PostMapping(value = "/login")
 	public ResponseEntity<?> login(@RequestBody AuthenticationDto authDto){

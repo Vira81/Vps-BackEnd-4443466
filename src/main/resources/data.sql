@@ -112,4 +112,23 @@ VALUES
 INSERT INTO public.vps_consulta(
 	dia, hora, valor, data_criacao_consulta, data_realizada, hospital_id, id, paciente_id, profissional_id, status_consulta)
 VALUES
-('2025-07-10', '08:30:00', 300.00, '2025-06-22', NULL, 3, 5, 3, 2, 'AGENDADA');
+('2025-06-23', '08:30:00', 300.00, '2025-06-22', NULL, 3, 5, 3, 1, 'AGENDADA'),
+('1981-11-23', '08:30:00', 300.00, '2025-06-22', NULL, 1, 6, 3, 3, 'EXPIRADA'),
+('2025-07-12', '08:30:00', 300.00, '2025-06-22', NULL, 2, 7, 3, 1, 'CANCELADA_PROFISSIONAL'),
+('2025-07-13', '08:30:00', 300.00, '2025-06-22', NULL, 3, 8, 3, 3, 'AGENDADA');
+
+-- Comando para descobrir o nome da sequencia
+-- Ou ver no Schemas do Postgre 
+--SELECT relname FROM pg_class WHERE relkind = 'S';
+
+SELECT setval('vps_pessoa_seq', 10, true);
+
+SELECT setval('vps_usuario_seq', 10, true);
+
+SELECT setval('vps_profissionalsaude_id_seq', 3, true);
+
+SELECT setval('vps_hospital_seq', 3, true);
+
+SELECT setval('vps_leito_id_seq', 6, true);
+
+SELECT setval('vps_consulta_seq', 8, true);

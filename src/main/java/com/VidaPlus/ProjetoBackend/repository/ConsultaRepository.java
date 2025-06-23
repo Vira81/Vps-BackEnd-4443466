@@ -12,5 +12,13 @@ import com.VidaPlus.ProjetoBackend.entity.enums.ConsultaStatus;
 @Repository
 public interface ConsultaRepository extends JpaRepository<ConsultaEntity, Long> {
 	List<ConsultaEntity> findByStatusConsultaAndDiaBefore(ConsultaStatus status, LocalDate dia);
+	
+	List<ConsultaEntity> findByPacienteId(Long pacienteId);
+
+	List<ConsultaEntity> findByProfissionalId(Long profissionalId);
+
+	List<ConsultaEntity> findByPacienteIdAndStatusConsulta(Long pacienteId, ConsultaStatus status);
+	
+	List<ConsultaEntity> findByProfissionalIdAndDia(Long profissionalId, LocalDate dia);
 
 }

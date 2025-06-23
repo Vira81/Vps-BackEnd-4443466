@@ -2,12 +2,16 @@ package com.VidaPlus.ProjetoBackend.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
+import com.VidaPlus.ProjetoBackend.dto.ConsultaGetDto;
 import com.VidaPlus.ProjetoBackend.dto.RealizarConsultaDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.HospitalEntity;
@@ -90,6 +94,71 @@ public class ConsultaService {
 		return consultaRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Consulta não encontrada"));
 	}
+	
+	/**
+	 * Lista todas as consultas
+	 * 
+	 */
+	public List<ConsultaGetDto> buscarTodasConsultas() {
+        return consultaRepository.findAll()
+                .stream()
+                .map(ConsultaGetDto::new) 
+                .collect(Collectors.toList());
+    }
+	
+	/**
+	 * Lista todas as consultas do usuario logado
+	 * 
+	 */
+	public List<ConsultaGetDto> buscarConsultasDoUsuario() {
+		// Identificação
+		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
+        PessoaEntity pessoa = usuario.getPessoa();
+
+        // Lista com as consultas
+            return consultaRepository.findByPacienteId(pessoa.getId())
+                    .stream()
+                    .map(ConsultaGetDto::new)
+                    .collect(Collectors.toList());
+    }
+	
+	
+	/**
+	 * Lista todas as consultas do usuario logado
+	 * Marcadas como Agendada
+	 * 
+	 */
+	public List<ConsultaGetDto> buscarConsultasAgendadasDoUsuario() {
+	    UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
+	    PessoaEntity pessoa = usuario.getPessoa();
+
+	    List<ConsultaEntity> consultas = consultaRepository
+	        .findByPacienteIdAndStatusConsulta(pessoa.getId(), ConsultaStatus.AGENDADA);
+
+	    return consultas.stream()
+	            .map(ConsultaGetDto::new)
+	            .collect(Collectors.toList());
+	}
+	
+	/**
+	 * Lista todas as consultas do profissional,
+	 * marcadas para Hoje
+	 * 
+	 */
+	public List<ConsultaGetDto> buscarConsultasProfissionalHoje() {
+		
+		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
+        PessoaEntity pessoa = usuario.getPessoa();
+
+        List<ConsultaEntity> consultas = consultaRepository
+    	        .findByProfissionalIdAndDia(pessoa.getProfissionalSaude().getId(), LocalDate.now());
+        
+            return consultas.stream()
+                    .map(ConsultaGetDto::new)
+                    .collect(Collectors.toList());
+    }
+
+
 
 	/**
 	 * Funcionario atende o Paciente.

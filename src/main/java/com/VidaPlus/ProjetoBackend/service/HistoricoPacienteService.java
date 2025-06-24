@@ -38,7 +38,8 @@ public class HistoricoPacienteService {
 	private PessoaRepository pessoaRepository;
 
 	/**
-	 * Atualiza o histórico do paciente no momento que uma consulta é marcada como realizada
+	 * Atualiza o histórico do paciente no momento que uma consulta é marcada como
+	 * realizada
 	 */
 	public void registrarEntradaConsulta(PessoaEntity paciente, ProfissionalSaudeEntity profissional, String descricao,
 			ConsultaEntity consulta) {
@@ -49,9 +50,14 @@ public class HistoricoPacienteService {
 		NovoHistoricoPacienteEntity novo = new NovoHistoricoPacienteEntity();
 		novo.setDataEntrada(LocalDate.now());
 		novo.setDescricao(descricao);
-		novo.setTipo(TipoEspecialidadeSaude.CONSULTA);
 		novo.setProfissionalResponsavel(profissional);
 		novo.setHistoricoPaciente(historico);
+
+		if (consulta.getTeleconsulta() == true) {
+			novo.setTipo(TipoEspecialidadeSaude.TELECONSULTA);
+		} else {
+			novo.setTipo(TipoEspecialidadeSaude.CONSULTA);
+		}
 
 		historico.getEntradas().add(novo);
 		historico.setDataUltimaAtualizacao(LocalDate.now());
@@ -88,8 +94,7 @@ public class HistoricoPacienteService {
 	}
 
 	/**
-	 * Organiza a informação do histórico
-	 * Retorna a lista com histórico
+	 * Organiza a informação do histórico Retorna a lista com histórico
 	 */
 	private HistoricoPacienteDto historicoSaida(HistoricoPacienteEntity entity) {
 		List<NovoHistoricoPacienteDto> entradas = entity.getEntradas().stream().map(entrada -> {
@@ -133,16 +138,14 @@ public class HistoricoPacienteService {
 		document.open();
 
 		document.add(new Paragraph("Histórico Clínico do Paciente"));
-		document.add(new Paragraph("Última atualização: "
-				+ historico.getDataUltimaAtualizacao()));
+		document.add(new Paragraph("Última atualização: " + historico.getDataUltimaAtualizacao()));
 		document.add(Chunk.NEWLINE);
 
 		List<NovoHistoricoPacienteDto> entradas = historico.getEntradas();
 
-		//Imprimi a lista
+		// Imprimi a lista
 		for (NovoHistoricoPacienteDto entrada : entradas) {
-			document.add(new Paragraph(
-					"Data: " + entrada.getDataEntrada()));
+			document.add(new Paragraph("Data: " + entrada.getDataEntrada()));
 			document.add(new Paragraph("Tipo: " + entrada.getTipo()));
 			document.add(new Paragraph("Profissional: Dr(a). " + entrada.getNomeProfissional()));
 			document.add(new Paragraph("Descrição: " + entrada.getDescricao()));

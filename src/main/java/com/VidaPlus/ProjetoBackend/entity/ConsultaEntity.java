@@ -80,16 +80,13 @@ public class ConsultaEntity {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "hospital_id", nullable = false)
 	private HospitalEntity hospital;
+	
+	// true , se for telemedicina
+	@Column (nullable = false)
+	@Builder.Default
+	private Boolean teleconsulta = false;
 
 	private LocalDateTime dataRealizada;
-
-	//private String diagnostico;
-
-	//private String observacao;
-
-	//private String medicacao;
-
-	//private String posologia;
 
 	@OneToOne(mappedBy = "consulta", cascade = CascadeType.ALL)
 	@JsonIgnore

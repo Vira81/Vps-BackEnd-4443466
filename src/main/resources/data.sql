@@ -23,7 +23,7 @@ INSERT INTO public.vps_usuario(data_criacao, id, pessoa_id, ultimo_acesso, email
 ('2025-06-22', 7, 7, NULL, 'user7@vida.com', 'PACIENTE', '$2a$10$1w/Y4wWxMaWRfR7lhw9xZ.mDOiwTAVzzJS9HEeheMaAipTZ0FnyWy', 'ATIVO'),
 ('2025-06-22', 8, 8, NULL, 'user8@vida.com', 'PROFISSIONAL', '$2a$10$RAsEEeyg2dRuSAOg.8jF/uFkpYgZqO0sy1Y9RhUzyNTN6nALfYwcu', 'ATIVO'),
 ('2025-06-22', 9, 9, NULL, 'user9@vida.com', 'PACIENTE', '$2a$10$3LfUqtbnE9hv2vI9.6LXOe2AagFJtI9P97NKRLikzVyg4QZgfTvDS', 'ATIVO'),
-('2025-06-22', 10, 10, NULL, 'user10@vida.com', 'ADMIN', '$2a$10$tv7CCNTUQ40gk/AlG0G30OzgwT6SjWQrP146HOJwKZeMM6.deXy/q', 'ATIVO');
+('2025-06-22', 10, 10, NULL, 'user10@vida.com', 'ADMIN', '$2a$10$tv7CCNTUQ40gk/AlG0G30OzgwT6SjWQrP146HOJwKZeMM6.deXy/q', 'INATIVO');
 
 
 
@@ -31,7 +31,8 @@ INSERT INTO public.vps_usuario(data_criacao, id, pessoa_id, ultimo_acesso, email
 INSERT INTO public.vps_hospital(id, endereco, nome, telefone) VALUES
 (1, 'Rua Saúde Pereira, 123 - São Paulo, SP', 'Hospital Vida Plus', '(11) 3000-0001'),
 (2, 'Av. Medica Central, 456 - Rio de Janeiro, RJ', 'Hospital Bem Estar', '(21) 4000-0002'),
-(3, 'Rua Enfermagem, 789 - Belo Horizonte, MG', 'Clinica Esperança', '(31) 5000-0003');
+(3, 'Rua Enfermagem, 789 - Belo Horizonte, MG', 'Clinica Esperança', '(31) 5000-0003'),
+(4, NULL, 'Telemedicina', NULL);
 
 
 
@@ -86,40 +87,21 @@ INSERT INTO public.vps_leito(data_liberacao, data_ocupacao, hospital_id, id, pac
 
 
 INSERT INTO public.vps_consulta(
-	dia, hora, valor, data_criacao_consulta, data_realizada, hospital_id, id, paciente_id, profissional_id, status_consulta)
+	dia, hora, valor, data_criacao_consulta, data_realizada, hospital_id, id, paciente_id, profissional_id, status_consulta, teleconsulta)
 VALUES
-('2025-06-15', '09:00:00', 200.00, '2025-06-10', NULL, 1, 1, 3, 1, 'AGENDADA');
-
-
-INSERT INTO public.vps_consulta(
-	dia, hora, valor, data_criacao_consulta, data_realizada, hospital_id, id, paciente_id, profissional_id, status_consulta)
-VALUES
-('2025-07-05', '14:30:00', 250.00, '2025-06-22', NULL, 1, 2, 4, 1, 'AGENDADA');
-
-
-INSERT INTO public.vps_consulta(
-	dia, hora, valor, data_criacao_consulta, data_realizada, hospital_id, id, paciente_id, profissional_id, status_consulta)
-VALUES
-('2025-06-10', '11:00:00', 180.00, '2025-06-05', NULL, 2, 3, 6, 2, 'AGENDADA');
-
-
-INSERT INTO public.vps_consulta(
-	dia, hora, valor, data_criacao_consulta, data_realizada, hospital_id, id, paciente_id, profissional_id, status_consulta)
-VALUES
-('2025-06-25', '10:00:00', 220.00, '2025-06-20', NULL, 3, 4, 7, 2, 'CANCELADA_PACIENTE');
-
-
-INSERT INTO public.vps_consulta(
-	dia, hora, valor, data_criacao_consulta, data_realizada, hospital_id, id, paciente_id, profissional_id, status_consulta)
-VALUES
-('2025-06-23', '08:30:00', 300.00, '2025-06-22', NULL, 3, 5, 3, 1, 'AGENDADA'),
-('1981-11-23', '08:30:00', 300.00, '2025-06-22', NULL, 1, 6, 3, 3, 'EXPIRADA'),
-('2025-07-12', '08:30:00', 300.00, '2025-06-22', NULL, 2, 7, 3, 1, 'CANCELADA_PROFISSIONAL'),
-('2025-07-13', '08:30:00', 300.00, '2025-06-22', NULL, 3, 8, 3, 3, 'AGENDADA');
+('2025-06-15', '09:00:00', 200.00, '2025-06-10', NULL, 1, 1, 3, 1, 'AGENDADA', false),
+('2025-07-05', '14:30:00', 250.00, '2025-06-22', NULL, 1, 2, 4, 1, 'AGENDADA', false),
+('2025-06-10', '11:00:00', 180.00, '2025-06-05', NULL, 2, 3, 6, 2, 'AGENDADA', false),
+('2025-06-25', '10:00:00', 220.00, '2025-06-20', NULL, 3, 4, 7, 2, 'CANCELADA_PACIENTE', false),
+('2025-06-23', '08:30:00', 300.00, '2025-06-22', NULL, 3, 5, 3, 1, 'AGENDADA', false),
+('1981-11-23', '08:30:00', 300.00, '2025-06-22', NULL, 1, 6, 3, 3, 'EXPIRADA', false),
+('2025-07-12', '08:30:00', 300.00, '2025-06-22', NULL, 2, 7, 3, 1, 'CANCELADA_PROFISSIONAL', false),
+('2025-07-13', '08:30:00', 300.00, '2025-06-22', NULL, 3, 8, 3, 3, 'AGENDADA', false);
 
 -- Comando para descobrir o nome da sequencia
 -- Ou ver no Schemas do Postgre 
 --SELECT relname FROM pg_class WHERE relkind = 'S';
+
 
 SELECT setval('vps_pessoa_seq', 10, true);
 
@@ -127,7 +109,7 @@ SELECT setval('vps_usuario_seq', 10, true);
 
 SELECT setval('vps_profissionalsaude_id_seq', 3, true);
 
-SELECT setval('vps_hospital_seq', 3, true);
+SELECT setval('vps_hospital_seq', 4, true);
 
 SELECT setval('vps_leito_id_seq', 6, true);
 

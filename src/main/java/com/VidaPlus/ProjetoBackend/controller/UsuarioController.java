@@ -21,8 +21,6 @@ import com.VidaPlus.ProjetoBackend.dto.SenhaAlterarDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioCadastroDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioPerfilDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioSaidaDto;
-import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
-import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 import com.VidaPlus.ProjetoBackend.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -156,5 +154,7 @@ public class UsuarioController {
 		UsuarioSaidaDto atualizado = usuarioService.atualizarPerfilPorCpf(dto);
 		return ResponseEntity.ok(atualizado);
 	}
+	
+	
 
 }

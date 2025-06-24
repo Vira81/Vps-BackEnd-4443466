@@ -7,10 +7,12 @@ import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.HospitalEntity;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
+import com.VidaPlus.ProjetoBackend.entity.TeleconsultaEntity;
 import com.VidaPlus.ProjetoBackend.repository.ConsultaRepository;
 import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
 import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
 import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
+import com.VidaPlus.ProjetoBackend.repository.TeleconsultaRepository;
 
 @Service
 public class ExisteService {
@@ -28,13 +30,7 @@ public class ExisteService {
 	private HospitalRepository hospitalRepository;
 
 	@Autowired
-	private ProntuarioService prontuarioService;
-
-	@Autowired
-	private HistoricoPacienteService historicoPacienteService;
-
-	@Autowired
-	private UsuarioLogadoService usuarioLogadoService;
+	private TeleconsultaRepository teleconsultaRepository;
 	
 
     public ProfissionalSaudeEntity profissionalSaude(Long profissionalId) {
@@ -50,6 +46,16 @@ public class ExisteService {
     public HospitalEntity hospital(Long hospitalId) {
         return hospitalRepository.findById(hospitalId)
                 .orElseThrow(() -> new RuntimeException("Hospital não encontrado"));
+    }
+    
+    public HospitalEntity hospitalVirtual(Long hospitalId) {
+        return hospitalRepository.findById(hospitalId)
+                .orElseThrow(() -> new RuntimeException("Hospital Virtual não encontrado. Verifique as configurações."));
+    }
+    
+    public TeleconsultaEntity teleconsulta(String salaId) {
+        return teleconsultaRepository.findBySalaId(salaId)
+                .orElseThrow(() -> new RuntimeException("Teleconsulta não encontrada."));
     }
     
     public ConsultaEntity consulta(Long consultaId) {

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.VidaPlus.ProjetoBackend.dto.AcessDto;
 import com.VidaPlus.ProjetoBackend.dto.AuthenticationDto;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
+import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 import com.VidaPlus.ProjetoBackend.security.JwtUtils;
 
@@ -42,6 +43,12 @@ public class AuthService {
 	        UserDetailsImpl userAuthenticate = (UserDetailsImpl) authentication.getPrincipal();
 	        UsuarioEntity usuario = userAuthenticate.getUsuario();
 
+	        // Usuario Inativo não pode acessar
+	        // TODO: Controlar os outros status, quando a verificação por email estiver pronta
+	        if (usuario.getStatus() == StatusUsuario.INATIVO) {
+	        	throw new AccessDeniedException("Essa conta está desativada.");
+	        }
+	        
 	        // Atualiza o último acesso
 	        usuario.setUltimoAcesso(LocalDateTime.now());
 	        usuarioRepository.save(usuario);
@@ -53,7 +60,7 @@ public class AuthService {
 	        throw new AccessDeniedException("Login ou senha inválidos");
 	    } catch (Exception e) {
 	        logger.error("Erro ao autenticar: {}", authDto.getUsername(), e);
-	        throw new RuntimeException("Erro interno na autenticação");
+	        throw new RuntimeException("Erro interno na autenticação " + e);
 	    }
 	}
 	}

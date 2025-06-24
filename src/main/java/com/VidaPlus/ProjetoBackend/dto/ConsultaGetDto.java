@@ -25,6 +25,8 @@ public class ConsultaGetDto {
 
     private ProntuarioGetConsultaDto prontuario;
     private PrescricaoGetConsultaDto prescricao;
+    
+    private String link;
 
     public ConsultaGetDto(ConsultaEntity consulta) {
         this.id = consulta.getId();
@@ -42,6 +44,11 @@ public class ConsultaGetDto {
 
         if (consulta.getPrescricao() != null) {
             this.prescricao = new PrescricaoGetConsultaDto(consulta.getPrescricao());
-        }}
+        }
+        
+        if (Boolean.TRUE.equals(consulta.getTeleconsulta())) {
+            this.link = consulta.getTeleconsultaEn().getLinkConsulta();
+        }
+    }
 
 }

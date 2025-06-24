@@ -86,6 +86,9 @@ public class ConsultaEntity {
 	@Builder.Default
 	private Boolean teleconsulta = false;
 
+	@OneToOne(mappedBy = "consulta")
+	private TeleconsultaEntity teleconsultaEn;
+
 	private LocalDateTime dataRealizada;
 
 	@OneToOne(mappedBy = "consulta", cascade = CascadeType.ALL)

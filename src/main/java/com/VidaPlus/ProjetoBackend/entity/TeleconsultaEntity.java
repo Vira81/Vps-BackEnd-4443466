@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import com.VidaPlus.ProjetoBackend.entity.enums.StatusTeleconsulta;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
@@ -30,8 +32,7 @@ public class TeleconsultaEntity {
 
     private LocalDateTime dataGeracaoLink;
 
-    private boolean gravacaoAtivada;
-
+    @Enumerated(EnumType.STRING)
     private StatusTeleconsulta status; 
 
 

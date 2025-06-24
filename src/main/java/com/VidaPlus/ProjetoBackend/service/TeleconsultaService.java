@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.ProntuarioDto;
@@ -19,123 +18,135 @@ import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.ConsultaStatus;
 import com.VidaPlus.ProjetoBackend.entity.enums.StatusTeleconsulta;
 import com.VidaPlus.ProjetoBackend.repository.ConsultaRepository;
-import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
 import com.VidaPlus.ProjetoBackend.repository.TeleconsultaRepository;
 
 @Service
 public class TeleconsultaService {
 
-    @Autowired
-    private ConsultaRepository consultaRepository;
+	@Autowired
+	private ConsultaRepository consultaRepository;
 
-    @Autowired
-    private TeleconsultaRepository teleconsultaRepository;
+	@Autowired
+	private TeleconsultaRepository teleconsultaRepository;
 
-    @Autowired
-    private UsuarioLogadoService usuarioLogadoService;
+	@Autowired
+	private UsuarioLogadoService usuarioLogadoService;
 
-    @Autowired
-    private ProntuarioService prontuarioService;
-    
-    @Autowired
-    private HistoricoPacienteService historicoPacienteService;
+	@Autowired
+	private ProntuarioService prontuarioService;
 
-    @Autowired
-    private ExisteService existe;
-    
-    public TeleconsultaSaidaDto agendarTeleconsulta(TeleconsultaDto dto) {
+	@Autowired
+	private HistoricoPacienteService historicoPacienteService;
 
-        // Paciente solicitando telemedicina e profissional solocitado
-    	UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
-        ProfissionalSaudeEntity profissional = existe.profissionalSaude(dto.getProfissionalId());
-        HospitalEntity hospitalVirtual = existe.hospitalVirtual(4L);
-        
-        // Consulta comum 
-        ConsultaEntity consulta = new ConsultaEntity();
-        consulta.setDia(dto.getDia());
-        // placeholder
-        consulta.setHora(LocalTime.now());
-        consulta.setHospital(hospitalVirtual);
-        consulta.setPaciente(usuario.getPessoa());
-        consulta.setProfissional(profissional);
-        consulta.setStatusConsulta(ConsultaStatus.AGENDADA);
-        consulta.setTeleconsulta(true);
+	@Autowired
+	private ExisteService existe;
 
-        consultaRepository.save(consulta);
+	/**
+	 * Criação da teleconsulta
+	 * TODO: Alterar Dto para informar a hora
+	 */
+	public TeleconsultaSaidaDto agendarTeleconsulta(TeleconsultaDto dto) {
 
-        // Teleconsulta
-        TeleconsultaEntity teleconsulta = new TeleconsultaEntity();
-        teleconsulta.setConsulta(consulta);
-        teleconsulta.setStatus(StatusTeleconsulta.AGENDADA);
+		// Paciente solicitando telemedicina e profissional solocitado
+		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
+		ProfissionalSaudeEntity profissional = existe.profissionalSaude(dto.getProfissionalId());
+		HospitalEntity hospitalVirtual = existe.hospitalVirtual(4L);
 
-        // link usado na consulta
-        String sala = UUID.randomUUID().toString();
-        String link = "http://localhost:8080/teleconsulta/sala/" + sala;
-        teleconsulta.setLinkConsulta(link);
-        teleconsulta.setSalaId(sala);
-        teleconsulta.setDataGeracaoLink(LocalDateTime.now());
+		// Consulta comum
+		ConsultaEntity consulta = new ConsultaEntity();
+		consulta.setDia(dto.getDia());
+		// placeholder
+		consulta.setHora(LocalTime.now());
+		consulta.setHospital(hospitalVirtual);
+		consulta.setPaciente(usuario.getPessoa());
+		consulta.setProfissional(profissional);
+		consulta.setStatusConsulta(ConsultaStatus.AGENDADA);
+		consulta.setTeleconsulta(true);
 
-        teleconsultaRepository.save(teleconsulta);
+		consultaRepository.save(consulta);
 
-        return saida(teleconsulta);
-    }
+		// Teleconsulta
+		TeleconsultaEntity teleconsulta = new TeleconsultaEntity();
+		teleconsulta.setConsulta(consulta);
+		teleconsulta.setStatus(StatusTeleconsulta.AGENDADA);
 
-    
-    private TeleconsultaSaidaDto saida(TeleconsultaEntity tele) {
-        return new TeleconsultaSaidaDto(
-            tele.getId(),
-            tele.getConsulta().getId(),
-            tele.getLinkConsulta(),
-            tele.getStatus(),
-            tele.getDataGeracaoLink()
-        );
-    }
-    
-    public TeleconsultaSaidaDto realizarTeleconsulta(String salaId) {
-        
-    	// Identificação
-    	TeleconsultaEntity teleconsulta = existe.teleconsulta(salaId);
-        UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
+		// link usado na consulta
+		String sala = UUID.randomUUID().toString().replace("-", "");
+		String link = "http://localhost:8080/teleconsulta/sala/" + sala;
+		teleconsulta.setLinkConsulta(link);
+		teleconsulta.setSalaId(sala);
+		teleconsulta.setDataGeracaoLink(LocalDateTime.now());
 
-        // Status
-        if (teleconsulta.getStatus() != StatusTeleconsulta.AGENDADA) {
-            throw new IllegalStateException("A teleconsulta já foi iniciada ou encerrada.");
-        }
-        
-        // Paciente é dono da consulta
-        if (!teleconsulta.getConsulta().getPaciente().getId().equals(usuario.getId())) {
-        	throw new IllegalStateException("Como vc chegou aqui???. Verifique o Token.");
-        }
+		teleconsultaRepository.save(teleconsulta);
 
-        /**
-         * >>>>> PLACEHOLDER TODO:
-         * Quando o usuario entrar na teleconsulta, marca como em andamento.
-         * O profissional finaliza a consulta, gera o prontuario, prescrição na conta dele.
-         * 
-         * No momento tudo isso é gerado aqui com o usuario.
-         */
-        
-        teleconsulta.setStatus(StatusTeleconsulta.FINALIZADA);
-        teleconsultaRepository.save(teleconsulta);
-        
-        // Atualiza a consulta
-        teleconsulta.getConsulta().setStatusConsulta(ConsultaStatus.REALIZADA);
-        teleconsulta.getConsulta().setDataRealizada(LocalDateTime.now());
-        
-     // Gera o prontuario
-     	ProntuarioDto dto = new ProntuarioDto(); 
-     	dto.setDiagnostico("Dolor "+salaId);	
-        prontuarioService.gerarProntuario(teleconsulta.getConsulta(), dto);
+		return saida(teleconsulta);
+	}
 
-     		// Salva no histórico do paciente
-     		String descricao = String.format("TeleConsulta realizada em %s com Dr(a). %s.",
-     				teleconsulta.getConsulta().getDataRealizada().toLocalDate(), teleconsulta.getConsulta().getProfissional().getPessoa().getNome());
+	private TeleconsultaSaidaDto saida(TeleconsultaEntity tele) {
+		return new TeleconsultaSaidaDto(tele.getId(), tele.getConsulta().getId(), tele.getLinkConsulta(),
+				tele.getStatus(), tele.getDataGeracaoLink());
+	}
 
-     		historicoPacienteService.registrarEntradaConsulta(teleconsulta.getConsulta().getPaciente(), teleconsulta.getConsulta().getProfissional(), descricao,
-     				teleconsulta.getConsulta());
+	/**
+	 * Paciente entra na teleconsulta
+	 */
+	public TeleconsultaSaidaDto realizarTeleconsulta(String salaId) {
 
+		// Identificação
+		TeleconsultaEntity teleconsulta = existe.teleconsulta(salaId);
+		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
 
-        return saida(teleconsulta);
-    }
+		// Status
+		if (teleconsulta.getStatus() != StatusTeleconsulta.AGENDADA) {
+			throw new IllegalStateException("A teleconsulta já foi iniciada ou encerrada.");
+		}
 
+		// Paciente é dono da consulta
+		if (!teleconsulta.getConsulta().getPaciente().getId().equals(usuario.getId())) {
+			throw new IllegalStateException("Como vc chegou aqui???. Verifique o Token.");
+		}
+
+		// Marca como em andamento
+		teleconsulta.setStatus(StatusTeleconsulta.ANDAMENTO);
+		teleconsultaRepository.save(teleconsulta);
+
+		return saida(teleconsulta);
+	}
+
+	/**
+	 * Profissional finaliza a teleconsulta, igual na consulta normal
+	 */
+	public TeleconsultaSaidaDto realizarTeleconsultaProf(String salaId, ProntuarioDto dto) {
+		TeleconsultaEntity teleconsulta = existe.teleconsulta(salaId);
+		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
+
+		// Status
+		if (teleconsulta.getStatus() != StatusTeleconsulta.ANDAMENTO) {
+			throw new IllegalStateException("A teleconsulta ainda não foi iniciada ou já encerrou.");
+		}
+
+		// Profissional é dono da consulta
+		if (!teleconsulta.getConsulta().getProfissional().getPessoa().getId().equals(usuario.getId())) {
+			throw new IllegalStateException("Como vc chegou aqui???. Verifique o Token.");
+		}
+
+		// Atualiza a consulta
+		teleconsulta.setStatus(StatusTeleconsulta.FINALIZADA);
+		teleconsulta.getConsulta().setStatusConsulta(ConsultaStatus.REALIZADA);
+		teleconsulta.getConsulta().setDataRealizada(LocalDateTime.now());
+
+		// Gera o prontuario
+		prontuarioService.gerarProntuario(teleconsulta.getConsulta(), dto);
+
+		// Salva no histórico do paciente
+		String descricao = String.format("TeleConsulta realizada em %s com Dr(a). %s.",
+				teleconsulta.getConsulta().getDataRealizada().toLocalDate(),
+				teleconsulta.getConsulta().getProfissional().getPessoa().getNome());
+
+		historicoPacienteService.registrarEntradaConsulta(teleconsulta.getConsulta().getPaciente(),
+				teleconsulta.getConsulta().getProfissional(), descricao, teleconsulta.getConsulta());
+
+		return saida(teleconsulta);
+
+	}
 }

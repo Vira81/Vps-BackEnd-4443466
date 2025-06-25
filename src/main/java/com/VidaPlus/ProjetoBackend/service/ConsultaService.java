@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -109,17 +111,16 @@ public class ConsultaService {
 	 * Lista todas as consultas do usuario logado
 	 * 
 	 */
-	public List<ConsultaGetDto> buscarConsultasDoUsuario() {
-		// Identificação
-		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
-        PessoaEntity pessoa = usuario.getPessoa();
+	public Page<ConsultaGetDto> buscarConsultasDoUsuario(Pageable pageable) {
+	    // Identificação
+	    UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
+	    PessoaEntity pessoa = usuario.getPessoa();
 
-        // Lista com as consultas
-            return consultaRepository.findByPacienteId(pessoa.getId())
-                    .stream()
-                    .map(ConsultaGetDto::new)
-                    .collect(Collectors.toList());
-    }
+	    // Retorno paginado
+	    return consultaRepository.findByPacienteId(pessoa.getId(), pageable)
+	            .map(ConsultaGetDto::new);
+	}
+
 	
 	
 	/**

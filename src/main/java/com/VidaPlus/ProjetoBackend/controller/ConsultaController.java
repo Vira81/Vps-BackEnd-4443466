@@ -4,6 +4,9 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -82,10 +85,21 @@ public class ConsultaController {
 	 * Somente as marcadas como agendada GET
 	 * http://localhost:8080/consulta/minhas/agendadas
 	 */
+	/**
+	 * Agora a lista é retornada em paginas
+	 * 
+	 * pagina 1
+	 * GET http://localhost:8080/consulta/minhas
+	 * 
+	 * outras paginas
+	 * http://localhost:8080/consulta/minhas?page=2
+	 */
 	@GetMapping("/minhas")
-	public ResponseEntity<List<ConsultaGetDto>> listarConsultasDoUsuario() {
-		return ResponseEntity.ok(consultaService.buscarConsultasDoUsuario());
+	public Page<ConsultaGetDto> listarConsultasPaciente(
+	        @PageableDefault(size = 10, sort = "dia") Pageable pageable) {
+	    return consultaService.buscarConsultasDoUsuario(pageable);
 	}
+
 
 	@GetMapping("/minhas/agendadas")
 	public ResponseEntity<List<ConsultaGetDto>> listarConsultasAgendadas() {

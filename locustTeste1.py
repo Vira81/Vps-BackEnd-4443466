@@ -53,4 +53,4 @@ class Usuario(HttpUser):
         self.client.post("/consulta/nova_consulta", json=consulta, headers=self.headers)
 
         # busca as consultas
-        self.client.get("/consulta/minhas/agendadas", headers=self.headers)
+        self.client.get("/consulta/minhas", headers=self.headers)

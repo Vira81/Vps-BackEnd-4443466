@@ -54,7 +54,7 @@ INSERT INTO public.vps_dias_trabalho(profissional_id, dia_semana) VALUES
 
 
 
-INSERT INTO public.profissional_hospital(hospital_id, profissional_id) VALUES
+INSERT INTO public.vps_profissional_hospital(hospital_id, profissional_id) VALUES
 (1, 1),
 (2, 1),
 (1, 2),

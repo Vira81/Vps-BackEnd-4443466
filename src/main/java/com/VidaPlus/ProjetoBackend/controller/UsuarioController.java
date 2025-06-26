@@ -28,7 +28,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/usuarios")
 
-// TODO: colocar autorizações, melhorar metodos genericos 
 public class UsuarioController {
 	private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 

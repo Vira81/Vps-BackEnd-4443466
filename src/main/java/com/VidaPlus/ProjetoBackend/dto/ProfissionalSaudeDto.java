@@ -10,12 +10,14 @@ import com.VidaPlus.ProjetoBackend.entity.enums.EspecialidadeSaude;
 import com.VidaPlus.ProjetoBackend.entity.enums.FuncaoSaude;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProfissionalSaudeDto {
-    private String cpf;
+    @NotNull(message = "É necessario informar o CPF.")
+	private String cpf;
 	
     private EspecialidadeSaude especialidade;
     private FuncaoSaude funcao;

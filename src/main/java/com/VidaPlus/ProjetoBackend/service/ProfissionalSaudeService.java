@@ -21,7 +21,6 @@ import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.exception.AlteracaoIndevida;
 import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
 import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
-import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 
 @Service
 public class ProfissionalSaudeService {
@@ -30,12 +29,10 @@ public class ProfissionalSaudeService {
 	private ProfissionalSaudeRepository profissionalSaudeRepository;
 
 	@Autowired
-	private UsuarioRepository usuarioRepository;
-
-	@Autowired
 	private HospitalRepository hospitalRepository;
 
-
+	@Autowired
+	private ExisteService existe;
 	/**
 	 * Admin salva os dados do profissional de saude.
 	 * 
@@ -45,8 +42,7 @@ public class ProfissionalSaudeService {
 	 */
 	public ProfissionalSaudeEntity cadastrarProfissional(ProfissionalSaudeDto dto) {
 		// Busca por CPF
-		UsuarioEntity usuario = usuarioRepository.findByPessoaCpf(dto.getCpf())
-				.orElseThrow(() -> new AlteracaoIndevida("Usuário com esse CPF não foi encontrado"));
+		UsuarioEntity usuario = existe.usuarioCpf(dto.getCpf());
 
 		PessoaEntity pessoa = usuario.getPessoa();
 
@@ -93,6 +89,36 @@ public class ProfissionalSaudeService {
 		return profissionalSaudeRepository.save(profissional);
 	}
 	
+	public ProfissionalSaudeEntity atualizarProfissional(ProfissionalSaudeDto dto) {
+		// Busca por CPF
+		UsuarioEntity usuario = existe.usuarioCpf(dto.getCpf());
+
+		ProfissionalSaudeEntity profissional = usuario.getPessoa().getProfissionalSaude();
+
+		// Atualiza os dados
+		if (dto.getCrm() != null) {profissional.setCrm(dto.getCrm());}
+		if (dto.getFuncao() != null) {profissional.setFuncao(dto.getFuncao());}
+		if (dto.getEspecialidade() != null) {profissional.setEspecialidade(dto.getEspecialidade());}
+
+		if (dto.getDiasTrabalho() != null) {
+			profissional.setDiasTrabalho(dto.getDiasTrabalho());
+		}
+
+		if (dto.getHospitaisIds() != null) {
+			Set<Long> ids = dto.getHospitaisIds();
+
+			Set<HospitalEntity> hospitais = new HashSet<>();
+			for (Long id : ids) {
+				HospitalEntity hospital = hospitalRepository.findById(id)
+						.orElseThrow(() -> new AlteracaoIndevida("Hospital id " + id + " não encontrado"));
+				hospitais.add(hospital);
+			}
+			profissional.setHospitais(hospitais);
+
+		}
+
+		return profissionalSaudeRepository.save(profissional);
+	}
 
 	// Busca informações do medico por Especialidade
 	public List<BuscaEspecialidadeDto> buscarPorEspecialidade(EspecialidadeSaude especialidade) {

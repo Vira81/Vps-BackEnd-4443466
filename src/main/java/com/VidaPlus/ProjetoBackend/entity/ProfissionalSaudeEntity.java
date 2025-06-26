@@ -69,7 +69,7 @@ public class ProfissionalSaudeEntity {
 
 	@ManyToMany
 	@JoinTable(
-	    name = "profissional_hospital",
+	    name = "vps_profissional_hospital",
 	    joinColumns = @JoinColumn(name = "profissional_id"),
 	    inverseJoinColumns = @JoinColumn(name = "hospital_id")
 	)

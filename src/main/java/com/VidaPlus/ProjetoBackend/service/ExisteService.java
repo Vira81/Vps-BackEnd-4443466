@@ -1,5 +1,7 @@
 package com.VidaPlus.ProjetoBackend.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,11 +10,13 @@ import com.VidaPlus.ProjetoBackend.entity.HospitalEntity;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.TeleconsultaEntity;
+import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.repository.ConsultaRepository;
 import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
 import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
 import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
 import com.VidaPlus.ProjetoBackend.repository.TeleconsultaRepository;
+import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 
 @Service
 public class ExisteService {
@@ -26,6 +30,9 @@ public class ExisteService {
 	@Autowired
 	private PessoaRepository pessoaRepository;
 
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+	
 	@Autowired
 	private HospitalRepository hospitalRepository;
 
@@ -61,5 +68,10 @@ public class ExisteService {
     public ConsultaEntity consulta(Long consultaId) {
         return consultaRepository.findById(consultaId)
                 .orElseThrow(() -> new RuntimeException("Consulta não encontrada"));
+    }
+    
+    public UsuarioEntity usuarioCpf(String cpf) {
+        return usuarioRepository.findByPessoaCpf(cpf)
+                .orElseThrow(() -> new RuntimeException("CPF não encontrado"));
     }
 }

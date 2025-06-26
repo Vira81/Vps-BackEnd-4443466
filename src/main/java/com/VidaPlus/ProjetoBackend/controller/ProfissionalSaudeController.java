@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.VidaPlus.ProjetoBackend.dto.ProfissionalSaudeDto;
 import com.VidaPlus.ProjetoBackend.service.ProfissionalSaudeService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/profissional")
 public class ProfissionalSaudeController {
@@ -33,7 +35,7 @@ public class ProfissionalSaudeController {
 	 */
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<String> criarProfissional(@RequestBody ProfissionalSaudeDto dto) {
+	public ResponseEntity<String> criarProfissional(@Valid @RequestBody ProfissionalSaudeDto dto) {
 
 		profissionalSaudeService.cadastrarProfissional(dto);
 		return ResponseEntity.ok("Funcionario cadastrado com sucesso.");
@@ -41,9 +43,9 @@ public class ProfissionalSaudeController {
 
 	@PutMapping
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<String> alterarProfissional(@RequestBody ProfissionalSaudeDto dto) {
+	public ResponseEntity<String> alterarProfissional(@Valid @RequestBody ProfissionalSaudeDto dto) {
 
-		profissionalSaudeService.cadastrarProfissional(dto);
+		profissionalSaudeService.atualizarProfissional(dto);
 		return ResponseEntity.ok("Funcionario atualizado com sucesso.");
 	}
 

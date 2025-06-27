@@ -20,7 +20,6 @@ import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.ConsultaStatus;
-import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.repository.ConsultaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -58,9 +57,7 @@ public class ConsultaService {
 		HospitalEntity hospital = existe.hospital(dto.getHospitalId());
 		
 		// Perfil Profissional
-		if (profissional.getUsuario().getPerfil() != PerfilUsuario.PROFISSIONAL) {
-			throw new RuntimeException("Usuário não é profissional de saude.");
-		}
+		existe.perfilProfissional(profissional.getUsuario().getPerfil());
 
 		// Medico trabalha no hospital
 		if (!profissional.getHospitais().stream()
@@ -74,9 +71,7 @@ public class ConsultaService {
 		}
 		
 		// Data no passado
-		if (dto.getDia().isBefore(LocalDate.now())) {
-		    throw new RuntimeException("A data informada já passou.");
-		}
+		existe.dataPassada(dto.getDia());
 		
 		
 		// Salva a consulta com Status Agendada
@@ -89,7 +84,7 @@ public class ConsultaService {
 
 	/**
 	 * Busca uma consulta pelo Id
-	 * TODO: Criar mais buscas.
+	 * 
 	 */
 	public ConsultaEntity buscarPorId(Long id) {
 		return consultaRepository.findById(id)

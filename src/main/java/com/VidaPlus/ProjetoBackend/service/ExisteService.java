@@ -1,6 +1,6 @@
 package com.VidaPlus.ProjetoBackend.service;
 
-import java.util.Optional;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +11,7 @@ import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.TeleconsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
+import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.repository.ConsultaRepository;
 import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
 import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
@@ -45,6 +46,11 @@ public class ExisteService {
                 .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
     }
     
+    public ProfissionalSaudeEntity profissionalSaudeUsuario(Long profissionalId) {
+        return profissionalRepository.findByUsuarioId(profissionalId)
+                .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
+    }
+    
     public PessoaEntity paciente(Long pessoaId) {
         return pessoaRepository.findById(pessoaId)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
@@ -73,5 +79,17 @@ public class ExisteService {
     public UsuarioEntity usuarioCpf(String cpf) {
         return usuarioRepository.findByPessoaCpf(cpf)
                 .orElseThrow(() -> new RuntimeException("CPF não encontrado"));
+    }
+    
+    public void perfilProfissional(PerfilUsuario perfil) {
+    	if (perfil != PerfilUsuario.PROFISSIONAL) {
+			throw new RuntimeException("Não é profissional de saude.");
+		}
+    }
+    
+    public void dataPassada(LocalDate dia) {
+    	if (dia.isBefore(LocalDate.now())) {
+			throw new RuntimeException("A data informada já passou.");
+		}	
     }
 }

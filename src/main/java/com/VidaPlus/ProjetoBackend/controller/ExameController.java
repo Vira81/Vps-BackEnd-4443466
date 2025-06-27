@@ -7,16 +7,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
 import com.VidaPlus.ProjetoBackend.dto.ExameDto;
+import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
-import com.VidaPlus.ProjetoBackend.service.ConsultaService;
 import com.VidaPlus.ProjetoBackend.service.ExameService;
 import com.VidaPlus.ProjetoBackend.service.ExisteService;
 import com.VidaPlus.ProjetoBackend.service.UsuarioLogadoService;
@@ -62,13 +62,18 @@ public class ExameController {
 	 * "hospitalId": 1, "dia": "2025-06-23" }
 	 */
 	@PreAuthorize("hasRole('PROFISSIONAL')")
-	@PostMapping("/novo_exame_consulta/{id}")
-	public ResponseEntity<?> criarExameComoProfissional(@Valid @RequestBody ExameDto dto) throws AccessDeniedException {
+	@PostMapping("/novo_exame_consulta/{consultaId}")
+	public ResponseEntity<?> criarExameComoProfissional(@Valid @PathVariable Long consultaId, @RequestBody ExameDto dto) throws AccessDeniedException {
 		// Medico logado
 		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
 		ProfissionalSaudeEntity profissional = existe.profissionalSaudeUsuario(usuario.getId());
 		
+		// Consulta associada com o exame
+		ConsultaEntity consulta = existe.consulta(consultaId);
+		
 		dto.setProfissionalId(profissional.getId());
+		dto.setPacienteId(consulta.getPaciente().getId());
+		dto.setConsultaId(consultaId);
 		
 		exameService.criarExame(dto);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Exame criado com sucesso!");

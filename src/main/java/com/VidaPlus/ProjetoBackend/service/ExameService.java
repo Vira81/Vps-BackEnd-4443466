@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.ConsultaDto;
@@ -41,16 +42,28 @@ public class ExameService {
 
 	/**
 	 * Cria um exame com Status Agendada Verifica se os Ids informados são adequados
-	 * TODO: Melhorar as exceções
+	 * 
 	 */
 	@Transactional
 	public ExameEntity criarExame(ExameDto dto) {
-
+		/**
+		 * TODO: Criar outro metodo para criar exame apos consulta.
+		 * Verificações dobradas e confusas
+		 */
+		
 		// Validações
 		if (dto.getProfissionalId() != null) {
 			ProfissionalSaudeEntity profissional = existe.profissionalSaude(dto.getProfissionalId());
 			existe.perfilProfissional(profissional.getUsuario().getPerfil());
+			if (dto.getConsultaId() != null) {
+				ConsultaEntity consulta = existe.consulta(dto.getConsultaId());
+				if (!consulta.getProfissional().getId().equals(profissional.getId())) {
+					throw new AccessDeniedException("Você não tem permissão para solicitar exames para esta consulta.");
+				}
+			}
 		}
+		
+		
 
 		PessoaEntity paciente = existe.paciente(dto.getPacienteId());
 		HospitalEntity hospital = existe.hospital(dto.getHospitalId());
@@ -61,6 +74,9 @@ public class ExameService {
 		ExameEntity exame = new ExameEntity();
 		exame.setHospital(hospital);
 		exame.setPaciente(paciente);
+		if (dto.getConsultaId() != null) {
+			exame.setConsulta(existe.consulta(dto.getConsultaId()));
+		}
 		if (dto.getProfissionalId() != null) {
 			exame.setProfissional(existe.profissionalSaude(dto.getProfissionalId()));
 		}

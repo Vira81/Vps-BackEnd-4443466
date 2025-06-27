@@ -20,6 +20,8 @@ public class ExameDto {
 
 	private Long pacienteId;
 	
+	private Long consultaId;
+	
 	@NotNull(message = "É necessário informar o Hospital.")
 	private Long hospitalId;
 

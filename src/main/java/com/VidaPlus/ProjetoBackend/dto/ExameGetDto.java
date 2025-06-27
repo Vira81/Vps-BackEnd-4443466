@@ -21,6 +21,8 @@ public class ExameGetDto {
     private String nomePaciente;
     private String nomeProfissional;
     private String nomeHospital;
+    
+    private Long consultaId;
 
     public ExameGetDto(ExameEntity exame) {
         this.id = exame.getId();
@@ -32,6 +34,10 @@ public class ExameGetDto {
 
         if (exame.getProfissional() != null) {
         	this.nomeProfissional = exame.getProfissional().getPessoa().getNome();
+        }
+        
+        if (exame.getConsulta() != null) {
+        	this.consultaId = exame.getConsulta().getId();
         }
       
     }

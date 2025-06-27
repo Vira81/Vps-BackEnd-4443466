@@ -53,6 +53,10 @@ public class ExameEntity {
 	@JoinColumn(name = "profissional_id", nullable = true)
 	private ProfissionalSaudeEntity profissional;
 
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "consulta_id", nullable = true)
+	private ConsultaEntity consulta;
+	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "paciente_id", nullable = false)
 	private PessoaEntity paciente;

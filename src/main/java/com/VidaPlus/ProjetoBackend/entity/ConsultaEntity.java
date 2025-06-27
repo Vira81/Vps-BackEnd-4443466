@@ -99,6 +99,10 @@ public class ConsultaEntity {
 	@JsonIgnore
 	private ProntuarioEntity prontuario;
 
+	@OneToOne(mappedBy = "consulta", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private ExameEntity exame;
+	
 	public ConsultaEntity(ConsultaDto usuario) {
 		BeanUtils.copyProperties(usuario, this);
 	}

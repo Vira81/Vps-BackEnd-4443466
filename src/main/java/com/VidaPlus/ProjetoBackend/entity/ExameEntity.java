@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.VidaPlus.ProjetoBackend.entity.enums.ConsultaStatus;
+import com.VidaPlus.ProjetoBackend.entity.enums.TipoExame;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -66,5 +67,9 @@ public class ExameEntity {
 	private HospitalEntity hospital;
 
 	private LocalDateTime dataRealizada;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private TipoExame tipoExame;
 
 }

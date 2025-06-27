@@ -25,6 +25,7 @@ public class ConsultaGetDto {
 
     private ProntuarioGetConsultaDto prontuario;
     private PrescricaoGetConsultaDto prescricao;
+    private ExameGetConsultaDto exame;
     
     private String link;
 
@@ -44,6 +45,10 @@ public class ConsultaGetDto {
 
         if (consulta.getPrescricao() != null) {
             this.prescricao = new PrescricaoGetConsultaDto(consulta.getPrescricao());
+        }
+        
+        if (consulta.getExame() != null) {
+            this.exame = new ExameGetConsultaDto(consulta.getExame());
         }
         
         if (Boolean.TRUE.equals(consulta.getTeleconsulta())) {

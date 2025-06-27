@@ -148,6 +148,7 @@ public class ConsultaService {
         List<ConsultaEntity> consultas = consultaRepository
     	        .findByProfissionalIdAndDia(pessoa.getProfissionalSaude().getId(), LocalDate.now());
         
+        
             return consultas.stream()
                     .map(ConsultaGetDto::new)
                     .collect(Collectors.toList());

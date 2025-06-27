@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.VidaPlus.ProjetoBackend.dto.ExameDto;
+import com.VidaPlus.ProjetoBackend.dto.ExameProfDto;
+import com.VidaPlus.ProjetoBackend.dto.ExamePacienteDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
@@ -39,43 +40,32 @@ public class ExameController {
 	/**
 	 * Cria um exame para o usuario logado
 	 * 
-	 * POST http://localhost:8080/exame/novo_exame 
-	 * { "profissionalId": 1,
-	 * "hospitalId": 1, "dia": "2025-06-23" }
+	 * POST http://localhost:8080/exame/novo 
+	 * {"hospitalId": 1, "dia": "2025-06-23", "tipoExame":"SANGUE" }
 	 */
 
-	@PostMapping("/novo_exame")
-	public ResponseEntity<?> criarExameComoPaciente(@Valid @RequestBody ExameDto dto) {
+	@PostMapping("/novo")
+	public ResponseEntity<?> criarExameComoPaciente(@Valid @RequestBody ExamePacienteDto dto) {
 		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
-
 		dto.setPacienteId(usuario.getId());
 
-		exameService.criarExame(dto);
+		exameService.criarExamePaciente(dto);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Exame criado com sucesso!");
 	}
 	
 	/**
 	 * Profissional de saude solicita um exame apos a consulta
 	 * 
-	 * POST http://localhost:8080/consulta/nova_exame_consulta 
-	 * { "pacienteId": 1,
-	 * "hospitalId": 1, "dia": "2025-06-23" }
+	 * POST http://localhost:8080/exame/1/consulta 
+	 * {"hospitalId": 1, "dia": "2025-06-23", "tipoExame":"SANGUE" }
 	 */
 	@PreAuthorize("hasRole('PROFISSIONAL')")
-	@PostMapping("/novo_exame_consulta/{consultaId}")
-	public ResponseEntity<?> criarExameComoProfissional(@Valid @PathVariable Long consultaId, @RequestBody ExameDto dto) throws AccessDeniedException {
-		// Medico logado
-		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
-		ProfissionalSaudeEntity profissional = existe.profissionalSaudeUsuario(usuario.getId());
+	@PostMapping("/{consultaId}/consulta")
+	public ResponseEntity<?> criarExameComoProfissional(@PathVariable Long consultaId, @Valid @RequestBody ExameProfDto dto) throws AccessDeniedException {
 		
-		// Consulta associada com o exame
-		ConsultaEntity consulta = existe.consulta(consultaId);
-		
-		dto.setProfissionalId(profissional.getId());
-		dto.setPacienteId(consulta.getPaciente().getId());
 		dto.setConsultaId(consultaId);
 		
-		exameService.criarExame(dto);
+		exameService.criarExameAposConsulta(dto);
 		return ResponseEntity.status(HttpStatus.CREATED).body("Exame criado com sucesso!");
 	}
 

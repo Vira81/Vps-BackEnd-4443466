@@ -96,7 +96,8 @@ VALUES
 ('2025-06-23', '08:30:00', 300.00, '2025-06-22', NULL, 3, 5, 3, 1, 'AGENDADA', false),
 ('1981-11-23', '08:30:00', 300.00, '2025-06-22', NULL, 1, 6, 3, 3, 'EXPIRADA', false),
 ('2025-07-12', '08:30:00', 300.00, '2025-06-22', NULL, 2, 7, 3, 1, 'CANCELADA_PROFISSIONAL', false),
-('2025-07-13', '08:30:00', 300.00, '2025-06-22', NULL, 3, 8, 3, 3, 'AGENDADA', false);
+('2025-07-13', '08:30:00', 300.00, '2025-06-22', NULL, 3, 8, 3, 3, 'AGENDADA', false),
+('2025-06-27', '08:30:00', 300.00, '2025-06-22', NULL, 2, 9, 3, 1, 'AGENDADA', false);
 
 -- Comando para descobrir o nome da sequencia
 -- Ou ver no Schemas do Postgre 
@@ -113,4 +114,4 @@ SELECT setval('vps_hospital_seq', 4, true);
 
 SELECT setval('vps_leito_id_seq', 6, true);
 
-SELECT setval('vps_consulta_seq', 8, true);
+SELECT setval('vps_consulta_seq', 9, true);

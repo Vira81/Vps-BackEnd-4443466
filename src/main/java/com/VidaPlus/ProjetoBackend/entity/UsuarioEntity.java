@@ -71,7 +71,6 @@ public class UsuarioEntity {
     @JoinColumn(name = "pessoa_id", referencedColumnName = "id")
     private PessoaEntity pessoa;
     
-    // construtor para converter DTO
 	public UsuarioEntity(UsuarioDto usuario) {
 		BeanUtils.copyProperties(usuario, this);
 	}

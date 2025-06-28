@@ -2,12 +2,8 @@ package com.VidaPlus.ProjetoBackend.service;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +19,6 @@ import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
 import com.VidaPlus.ProjetoBackend.exception.AlteracaoIndevida;
 import com.VidaPlus.ProjetoBackend.exception.EmailJaCadastradoException;
-import com.VidaPlus.ProjetoBackend.repository.PessoaRepository;
 import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -39,9 +34,6 @@ public class UsuarioService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	private PessoaRepository pessoaRepository;
 
 	@Autowired
 	private UsuarioLogadoService login;

@@ -40,8 +40,11 @@ public class ExisteService {
 	@Autowired
 	private TeleconsultaRepository teleconsultaRepository;
 	
-
-    public ProfissionalSaudeEntity profissionalSaude(Long profissionalId) {
+	/**
+	 * Verificação comum para os outros services
+	 */
+    
+	public ProfissionalSaudeEntity profissionalSaude(Long profissionalId) {
         return profissionalRepository.findById(profissionalId)
                 .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
     }

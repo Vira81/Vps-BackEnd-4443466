@@ -13,13 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.VidaPlus.ProjetoBackend.dto.ExameProfDto;
 import com.VidaPlus.ProjetoBackend.dto.ExamePacienteDto;
-import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
-import com.VidaPlus.ProjetoBackend.entity.ProfissionalSaudeEntity;
+import com.VidaPlus.ProjetoBackend.dto.ExameProfDto;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.service.ExameService;
-import com.VidaPlus.ProjetoBackend.service.ExisteService;
 import com.VidaPlus.ProjetoBackend.service.UsuarioLogadoService;
 
 import jakarta.validation.Valid;
@@ -34,8 +31,6 @@ public class ExameController {
 	@Autowired
 	private ExameService exameService;
 	
-	@Autowired
-	private ExisteService existe;
 	
 	/**
 	 * Cria um exame para o usuario logado

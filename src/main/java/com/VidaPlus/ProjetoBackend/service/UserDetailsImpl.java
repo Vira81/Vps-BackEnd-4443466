@@ -17,6 +17,11 @@ public class UserDetailsImpl implements UserDetails {
         this.usuario = usuario;
     }
 
+    /**
+     * Atribui as permissões de acesso usando o Perfil
+     * 
+     * @PreAuthorize("hasRole('ADMIN')")
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         

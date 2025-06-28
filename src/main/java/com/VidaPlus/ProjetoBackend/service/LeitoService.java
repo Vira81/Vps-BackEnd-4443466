@@ -6,41 +6,25 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.VidaPlus.ProjetoBackend.dto.ConsultaGetDto;
 import com.VidaPlus.ProjetoBackend.dto.LeitoGetDto;
-import com.VidaPlus.ProjetoBackend.repository.ConsultaRepository;
 import com.VidaPlus.ProjetoBackend.repository.LeitoRepository;
 
 @Service
 public class LeitoService {
-	@Autowired
-	private UsuarioLogadoService usuarioLogadoService;
 
 	@Autowired
-	private ExisteService existe;
-	
-	@Autowired
-	private ConsultaRepository consultaRepository;
-	
-	@Autowired
 	private LeitoRepository leitoRepository;
-	
+
 	/**
 	 * Lista todos os leitos
 	 * 
 	 */
 	public List<LeitoGetDto> buscarTodosLeitos() {
-        return leitoRepository.findAll()
-                .stream()
-                .map(LeitoGetDto::new) 
-                .collect(Collectors.toList());
-    }
-	
+		return leitoRepository.findAll().stream().map(LeitoGetDto::new).collect(Collectors.toList());
+	}
+
 	public List<LeitoGetDto> buscarLeitosHospital(Long hospitalId) {
-		return leitoRepository.findByHospitalId(hospitalId)
-                .stream()
-                .map(LeitoGetDto::new) 
-                .collect(Collectors.toList());
-    }
+		return leitoRepository.findByHospitalId(hospitalId).stream().map(LeitoGetDto::new).collect(Collectors.toList());
+	}
 
 }

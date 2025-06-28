@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.VidaPlus.ProjetoBackend.dto.PrescricaoDto;
 import com.VidaPlus.ProjetoBackend.entity.ConsultaEntity;
 import com.VidaPlus.ProjetoBackend.entity.PrescricaoEntity;
+import com.VidaPlus.ProjetoBackend.entity.enums.ConsultaStatus;
 import com.VidaPlus.ProjetoBackend.repository.PrescricaoRepository;
 import com.lowagie.text.Document;
 import com.lowagie.text.Paragraph;
@@ -22,46 +23,49 @@ public class PrescricaoService {
 	/**
 	 * Cria a prescrição. (Opcional)
 	 * 
-	 * TODO: Adicionar uma checagem para permitir que a prescrição 
-	 *  seja criada somente em consulta marcadas como Realizada
+	 * TODO: Adicionar uma checagem para permitir que a prescrição seja criada
+	 * somente em consulta marcadas como Realizada
 	 **/
-	public void gerarPrescricao(ConsultaEntity consulta, PrescricaoDto dto)  {
-	    PrescricaoEntity prescricao = new PrescricaoEntity();
-	    prescricao.setConsulta(consulta);
-	    prescricao.setHospitalNome(consulta.getHospital().getNome());
-	    prescricao.setPaciente(consulta.getPaciente());
-	    prescricao.setProfissional(consulta.getProfissional());
-	    prescricao.setMedicacao(dto.getMedicacao());
-	    prescricao.setPosologia(dto.getPosologia());
-	    prescricao.setDataCriacao(LocalDateTime.now());
+	public void gerarPrescricao(ConsultaEntity consulta, PrescricaoDto dto) {
+		if (consulta.getStatusConsulta() != ConsultaStatus.REALIZADA) {
+			throw new RuntimeException("A consulta precisa estar marcada como realizada.");
+		}
 
-	    prescricaoRepository.save(prescricao);
+		PrescricaoEntity prescricao = new PrescricaoEntity();
+		prescricao.setConsulta(consulta);
+		prescricao.setHospitalNome(consulta.getHospital().getNome());
+		prescricao.setPaciente(consulta.getPaciente());
+		prescricao.setProfissional(consulta.getProfissional());
+		prescricao.setMedicacao(dto.getMedicacao());
+		prescricao.setPosologia(dto.getPosologia());
+		prescricao.setDataCriacao(LocalDateTime.now());
+
+		prescricaoRepository.save(prescricao);
 	}
-	
+
 	/**
 	 * Gera o PDF da prescrição
 	 */
 	public byte[] gerarPdfPrescricao(PrescricaoEntity prescricao) {
-	    ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-	    Document document = new Document();
-	    PdfWriter.getInstance(document, out);
-	    document.open();
+		Document document = new Document();
+		PdfWriter.getInstance(document, out);
+		document.open();
 
-	    
-	    document.add(new Paragraph(prescricao.getConsulta().getHospital().getNome()));
-	    document.add(new Paragraph("Endereço: " + prescricao.getConsulta().getHospital().getEndereco()));
-	    document.add(new Paragraph("Tel: " + prescricao.getConsulta().getHospital().getTelefone()));
-	    document.add(new Paragraph(" "));
-	    document.add(new Paragraph("PRESCRIÇÃO"));
-	    document.add(new Paragraph("Paciente: " + prescricao.getPaciente().getNome()));
-	    document.add(new Paragraph("Medico: " + prescricao.getProfissional().getPessoa().getNome()));
-	    document.add(new Paragraph("Data: " + prescricao.getDataCriacao()));
-	    document.add(new Paragraph("Diagnostico: " + prescricao.getConsulta().getProntuario().getDiagnostico()));
-	    document.add(new Paragraph("Medicação: " + prescricao.getMedicacao()));
-	    document.add(new Paragraph("Posologia: " + prescricao.getPosologia()));
+		document.add(new Paragraph(prescricao.getConsulta().getHospital().getNome()));
+		document.add(new Paragraph("Endereço: " + prescricao.getConsulta().getHospital().getEndereco()));
+		document.add(new Paragraph("Tel: " + prescricao.getConsulta().getHospital().getTelefone()));
+		document.add(new Paragraph(" "));
+		document.add(new Paragraph("PRESCRIÇÃO"));
+		document.add(new Paragraph("Paciente: " + prescricao.getPaciente().getNome()));
+		document.add(new Paragraph("Medico: " + prescricao.getProfissional().getPessoa().getNome()));
+		document.add(new Paragraph("Data: " + prescricao.getDataCriacao()));
+		document.add(new Paragraph("Diagnostico: " + prescricao.getConsulta().getProntuario().getDiagnostico()));
+		document.add(new Paragraph("Medicação: " + prescricao.getMedicacao()));
+		document.add(new Paragraph("Posologia: " + prescricao.getPosologia()));
 
-	    document.close();
-	    return out.toByteArray();
+		document.close();
+		return out.toByteArray();
 	}
 }

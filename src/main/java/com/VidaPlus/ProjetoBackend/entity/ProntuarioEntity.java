@@ -36,13 +36,6 @@ public class ProntuarioEntity {
     @JoinColumn(name = "paciente_id", nullable = false)
     private PessoaEntity paciente;
 
-    /**
-    **Hospital_id já esta na consulta
-    **
-    *@ManyToOne
-    *@JoinColumn(name = "hospital_id", nullable = false)
-    *private HospitalEntity hospital;
-    **/
     @Column
     private String diagnostico;
 

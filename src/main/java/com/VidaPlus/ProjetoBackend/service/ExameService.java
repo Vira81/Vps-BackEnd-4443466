@@ -24,12 +24,6 @@ public class ExameService {
 	private ExameRepository exameRepository;
 
 	@Autowired
-	private ProntuarioService prontuarioService;
-
-	@Autowired
-	private HistoricoPacienteService historicoPacienteService;
-
-	@Autowired
 	private UsuarioLogadoService usuarioLogadoService;
 
 	@Autowired
@@ -65,7 +59,6 @@ public class ExameService {
 	@Transactional
 	public ExameEntity criarExameAposConsulta(ExameProfDto dto) {
 
-		
 		// Medico logado
 		UsuarioEntity usuario = usuarioLogadoService.getUsuarioLogado();
 		ProfissionalSaudeEntity profissional = existe.profissionalSaudeUsuario(usuario.getId());
@@ -93,8 +86,9 @@ public class ExameService {
 
 		return exameRepository.save(exame);
 	}
+
 	public void fazerExame() {
-		
+
 	}
-	
+
 }

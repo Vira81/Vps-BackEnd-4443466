@@ -41,13 +41,7 @@ public class PrescricaoEntity {
 	@CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime dataCriacao;
-	/**
-	 ** Hospital_id já esta na consulta (Como no prontuario)
-	 **
-	 * @ManyToOne
-	 * @JoinColumn(name = "hospital_id", nullable = false) private HospitalEntity
-	 *                  hospital;
-	 **/
+	
 	@Column
 	private String medicacao;
 

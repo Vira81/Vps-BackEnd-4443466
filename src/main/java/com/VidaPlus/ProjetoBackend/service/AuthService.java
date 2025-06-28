@@ -33,6 +33,9 @@ public class AuthService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
+	/**
+	 * Efetua o login e gera o token de acesso
+	 */
 	public AcessDto login(AuthenticationDto authDto) {
 	    try {
 	        UsernamePasswordAuthenticationToken userAuth =

@@ -17,9 +17,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-/**
- * TODO: Alterar o dto, nao passar senhas
- */
 
 public class UsuarioDto {
 

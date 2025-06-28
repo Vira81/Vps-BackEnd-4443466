@@ -17,8 +17,8 @@ public class AuditoriaController {
 
     /**
      * Visualiza os logs de auditoria
-     * como o Service não é usado, essa ação não aparece no log
-     * TODO: Verificar se isso ocorre em outras partes
+     * 
+     * GET http://localhost:8080/audit-logs
      */
     
     @GetMapping

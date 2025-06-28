@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
 @Service
 public class ConsultaAtrasadaService {
 	/**
-	 * Marca consultas 
+	 * Tarefa agendada para marcar consultas atrasadas como expiradas.
 	 */
     @Autowired
     private ConsultaRepository consultaRepository;

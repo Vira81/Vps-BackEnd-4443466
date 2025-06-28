@@ -16,9 +16,10 @@ public class UserDetailServiceImpl implements UserDetailsService{
 	private UsuarioRepository usuarioRepository;
 
 	/**
-	 * Metodo antigo para descobrir o usuario logado.
-	 * novo ->"getUsuarioLogado"
-	 * TODO: Excluir
+	 * Busca os dados do usuario no momento do login
+	 * 
+	 * Estou usando usuarioLogadoService para buscas nos services. 
+	 * 
 	 */
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

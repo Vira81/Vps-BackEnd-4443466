@@ -19,10 +19,19 @@ public class AuditoriaAspect {
 	private AuditoriaLogRepository auditoriaLogRepository;
 
 	/**
-	 * Cria logs de auditoria de todas as ações realizadas no servie.
-	 * Exceto loadUserByUsename, evitando registros "duplicados" 
+	 * Cria logs de auditoria de todas as ações realizadas no servie e controllers.
+	 * Exceto serviços de verificação, evitando registros "duplicados" 
 	 */
-	@Before("within(com.VidaPlus.ProjetoBackend.service..*) && !execution(* com.VidaPlus.ProjetoBackend.service.UserDetailServiceImpl.loadUserByUsername(..))")
+	@Before(
+		    "(" +
+		        "within(com.VidaPlus.ProjetoBackend.service..*) || " +
+		        "within(com.VidaPlus.ProjetoBackend.controller..*) || " +
+		        "within(com.VidaPlus.ProjetoBackend.auditoria.AuditoriaController) "+
+		    ") && !execution(* com.VidaPlus.ProjetoBackend.service.UserDetailServiceImpl.loadUserByUsername(..))" +
+		      " && !within(com.VidaPlus.ProjetoBackend.service.ExisteService)" +
+		      " && !within(com.VidaPlus.ProjetoBackend.service.UsuarioLogadoService)"
+		)
+
 
 	public void logActivity(JoinPoint joinPoint) {
 
@@ -35,6 +44,7 @@ public class AuditoriaAspect {
 		log.setTimestamp(new Date());
 		log.setResource(joinPoint.getSignature().getDeclaringTypeName());
 		log.setDetails(Arrays.toString(joinPoint.getArgs()));
+		
 
 		auditoriaLogRepository.save(log);
 	}

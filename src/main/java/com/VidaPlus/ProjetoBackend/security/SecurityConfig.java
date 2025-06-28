@@ -21,9 +21,6 @@ import com.VidaPlus.ProjetoBackend.service.UserDetailServiceImpl;
 public class SecurityConfig {
 
     @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
-
-    @Autowired
     private CustomAccessDeniedHandler customAccessDeniedHandler;
     
     @Autowired

@@ -27,7 +27,7 @@ import lombok.Setter;
 @EqualsAndHashCode(of = "id")
 @Table(name = "vps_hospital")
 /**
- * Classe Hospital, no momento ela é generica
+ * Classe Hospital
  * TODO: Implementar essa classe para fazer a Administração hospitalar
  */
 public class HospitalEntity {

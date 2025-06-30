@@ -19,6 +19,7 @@ import com.VidaPlus.ProjetoBackend.dto.SenhaAlterarDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioCadastroDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioPerfilDto;
 import com.VidaPlus.ProjetoBackend.dto.UsuarioSaidaDto;
+import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.service.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -40,9 +41,17 @@ public class UsuarioController {
 	 */
 	@PostMapping("/cadastro")
 	public ResponseEntity<String> cadastrar(@RequestBody @Valid UsuarioCadastroDto dto) {
-		usuarioService.cadastrarNovoUsuario(dto);
-		return ResponseEntity.ok("Usuario cadastrado com sucesso!");
+		UsuarioEntity usuario = usuarioService.cadastrarNovoUsuario(dto);
+		
+		return ResponseEntity.ok("Usuario cadastrado com sucesso! \n"
+				+ "PUT http://localhost:8080/usuarios/cadastro/"+usuario.getCod()+" para ativar a sua conta.");
 	}
+	
+	@PutMapping("/cadastro/{cod}")
+	public ResponseEntity<String> ativarConta(@PathVariable String cod) {
+        usuarioService.ativarConta(cod);
+        return ResponseEntity.ok("Conta Ativada.");
+    }
 
 	/**
 	 * Busca um usuário por ID.

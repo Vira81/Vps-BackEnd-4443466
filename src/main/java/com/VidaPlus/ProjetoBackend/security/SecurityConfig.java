@@ -54,7 +54,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/usuarios/cadastro").permitAll()
+                .requestMatchers("/usuarios/cadastro/**").permitAll()
                 .anyRequest().authenticated());
 
         http.addFilterBefore(new AuthFilterToken(jwtUtils, userDetailService), UsernamePasswordAuthenticationFilter.class);

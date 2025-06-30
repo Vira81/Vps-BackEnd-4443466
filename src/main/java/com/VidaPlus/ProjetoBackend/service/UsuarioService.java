@@ -1,6 +1,7 @@
 package com.VidaPlus.ProjetoBackend.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class UsuarioService {
 	 * usando o email novo.
 	 */
 	public ResponseEntity<?> atualizarEmail(EmailDto dto) {
-		UsuarioEntity usuario = buscarId(login.getUsuarioLogado().getId());
+		UsuarioEntity usuario = login.getUsuarioLogado();
 
 		if (dto.getEmail() != null && !dto.getEmail().equals(usuario.getEmail())) {
 			if (usuarioRepository.existsByEmail(dto.getEmail())) {
@@ -144,10 +145,22 @@ public class UsuarioService {
 		// Perfil de Paciente e Status Pendente
 		UsuarioEntity novoUsuario = UsuarioEntity.builder().email(dto.getEmail())
 				.senhaHash(passwordEncoder.encode(dto.getSenha())).perfil(PerfilUsuario.PACIENTE)
-				.status(StatusUsuario.PENDENTE).pessoa(new PessoaEntity()).build();
-
+				.status(StatusUsuario.PENDENTE).pessoa(new PessoaEntity())
+				.cod(UUID.randomUUID().toString().substring(0,8)).build();
+		
+	
 		return usuarioRepository.save(novoUsuario);
 	}
+	
+	public void ativarConta(String cod) {
+		
+		UsuarioEntity usuario = usuarioRepository.findByCod(cod)
+				.orElseThrow(() -> new AlteracaoIndevida("Codigo invalido"));
+		
+			usuario.setStatus(StatusUsuario.ATIVO);
+			usuario.setCod(null);
+			usuarioRepository.save(usuario);
+		}
 	
 	/**
 	 * Alterar o Status e Perfil do usuario, buscando por CPF

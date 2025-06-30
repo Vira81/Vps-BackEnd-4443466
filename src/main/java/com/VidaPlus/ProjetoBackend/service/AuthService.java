@@ -46,10 +46,14 @@ public class AuthService {
 	        UserDetailsImpl userAuthenticate = (UserDetailsImpl) authentication.getPrincipal();
 	        UsuarioEntity usuario = userAuthenticate.getUsuario();
 
-	        // Usuario Inativo não pode acessar
-	        // TODO: Controlar os outros status, quando a verificação por email estiver pronta
+	        // Usuario Inativo e Pendente não pode acessar
 	        if (usuario.getStatus() == StatusUsuario.INATIVO) {
 	        	throw new AccessDeniedException("Essa conta está desativada.");
+	        }
+	        
+	        if (usuario.getStatus() == StatusUsuario.PENDENTE) {
+	        	throw new AccessDeniedException("Ative sua conta. \n"
+	        			+ "PUT http://localhost:8080/usuarios/cadastro/"+usuario.getCod());
 	        }
 	        
 	        // Atualiza o último acesso
@@ -61,10 +65,8 @@ public class AuthService {
 	    } catch (BadCredentialsException e) {
 	        logger.warn("Credenciais inválidas para o usuário: {}", authDto.getUsername());
 	        throw new AccessDeniedException("Login ou senha inválidos");
-	    } catch (Exception e) {
-	        logger.error("Erro ao autenticar: {}", authDto.getUsername(), e);
-	        throw new RuntimeException("Erro interno na autenticação " + e);
+	    } 
 	    }
 	}
-	}
+	
 

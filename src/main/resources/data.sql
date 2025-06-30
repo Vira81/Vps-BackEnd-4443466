@@ -9,7 +9,8 @@ INSERT INTO public.vps_pessoa(data_nascimento, id, cpf, nome, telefone) VALUES
 ('1978-04-05', 7, '77777777777', 'Beto Dias', '(11) 90000-0007'),
 ('1992-09-18', 8, '88888888888', 'André Medicacao', '(11) 90000-0008'),
 ('1998-12-25', 9, '99999999999', 'Juliana Alves', '(11) 90000-0009'),
-('1987-06-14', 10, '00000000000', 'Admin 2', '(11) 90000-0010');
+('1987-06-14', 10, '00000000000', 'Admin 2', '(11) 90000-0010'),
+('1987-06-15', 11, '00000000001', 'Minha unica função é ser apagado', '(11) 90000-0010');
 
 
 
@@ -23,7 +24,8 @@ INSERT INTO public.vps_usuario(data_criacao, id, pessoa_id, ultimo_acesso, email
 ('2025-06-22', 7, 7, NULL, 'user7@vida.com', 'PACIENTE', '$2a$10$1w/Y4wWxMaWRfR7lhw9xZ.mDOiwTAVzzJS9HEeheMaAipTZ0FnyWy', 'ATIVO'),
 ('2025-06-22', 8, 8, NULL, 'user8@vida.com', 'PROFISSIONAL', '$2a$10$RAsEEeyg2dRuSAOg.8jF/uFkpYgZqO0sy1Y9RhUzyNTN6nALfYwcu', 'ATIVO'),
 ('2025-06-22', 9, 9, NULL, 'user9@vida.com', 'PACIENTE', '$2a$10$3LfUqtbnE9hv2vI9.6LXOe2AagFJtI9P97NKRLikzVyg4QZgfTvDS', 'ATIVO'),
-('2025-06-22', 10, 10, NULL, 'user10@vida.com', 'ADMIN', '$2a$10$tv7CCNTUQ40gk/AlG0G30OzgwT6SjWQrP146HOJwKZeMM6.deXy/q', 'INATIVO');
+('2025-06-22', 10, 10, NULL, 'user10@vida.com', 'ADMIN', '$2a$10$tv7CCNTUQ40gk/AlG0G30OzgwT6SjWQrP146HOJwKZeMM6.deXy/q', 'INATIVO'),
+('2025-06-22', 11, 11, NULL, 'user11@vida.com', 'PACIENTE', '$2a$10$3LfUqtbnE9hv2vI9.6LXOe2AagFJtI9P97NKRLikzVyg4QZgfTvDS', 'PENDENTE');
 
 
 
@@ -104,9 +106,9 @@ VALUES
 --SELECT relname FROM pg_class WHERE relkind = 'S';
 
 
-SELECT setval('vps_pessoa_seq', 10, true);
+SELECT setval('vps_pessoa_seq', 11, true);
 
-SELECT setval('vps_usuario_seq', 10, true);
+SELECT setval('vps_usuario_seq', 11, true);
 
 SELECT setval('vps_profissionalsaude_id_seq', 3, true);
 

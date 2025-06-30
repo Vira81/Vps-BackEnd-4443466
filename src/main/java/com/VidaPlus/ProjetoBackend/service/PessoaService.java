@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.VidaPlus.ProjetoBackend.dto.PessoaNotNullDto;
+import com.VidaPlus.ProjetoBackend.dto.UsuarioSaidaDto;
 import com.VidaPlus.ProjetoBackend.entity.PessoaEntity;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.exception.AlteracaoIndevida;
@@ -48,4 +49,10 @@ public class PessoaService {
 
         return pessoaRepository.save(pessoa);
     }
+    
+    public UsuarioSaidaDto minhaConta() {
+		UsuarioEntity usuario = usuarioRepository.findById(login.getUsuarioLogado().getId())
+				.orElseThrow() ;
+		return new UsuarioSaidaDto(usuario);
+	}
 }

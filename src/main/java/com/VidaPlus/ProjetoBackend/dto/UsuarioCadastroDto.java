@@ -20,4 +20,6 @@ public class UsuarioCadastroDto {
 	@Size(min = 3, message = "A senha tem que conter no minimo 3 caracteres")
 	private String senha;
 	
+	private String cod;
+	
 }

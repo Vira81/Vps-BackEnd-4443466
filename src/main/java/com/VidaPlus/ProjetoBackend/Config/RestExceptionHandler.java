@@ -76,7 +76,14 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex) {
-        ApiError apiError = criarErro(HttpStatus.FORBIDDEN, "Acesso negado: " + ex.getMessage());
+        
+    	if (ex.getMessage()=="Access Denied") {
+        	ApiError apiError = criarErro(HttpStatus.FORBIDDEN, "Acesso negado: Você não tem permissão para acessar este recurso.");
+        	return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
+    	} 
+        
+        ApiError apiError = criarErro(HttpStatus.FORBIDDEN, "Acesso negado: "+ ex.getMessage());
+        
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
     }
 

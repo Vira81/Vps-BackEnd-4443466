@@ -21,6 +21,7 @@ import com.VidaPlus.ProjetoBackend.entity.enums.PerfilUsuario;
 import com.VidaPlus.ProjetoBackend.exception.AlteracaoIndevida;
 import com.VidaPlus.ProjetoBackend.repository.HospitalRepository;
 import com.VidaPlus.ProjetoBackend.repository.ProfissionalSaudeRepository;
+import com.VidaPlus.ProjetoBackend.repository.UsuarioRepository;
 
 @Service
 public class ProfissionalSaudeService {
@@ -31,6 +32,9 @@ public class ProfissionalSaudeService {
 	@Autowired
 	private HospitalRepository hospitalRepository;
 
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+	
 	@Autowired
 	private ExisteService existe;
 	/**
@@ -55,6 +59,7 @@ public class ProfissionalSaudeService {
 		// Não muda se for Admin
 		if (usuario.getPerfil() == PerfilUsuario.PACIENTE) {
 			usuario.setPerfil(PerfilUsuario.PROFISSIONAL);
+			usuarioRepository.save(usuario);
 
 		}
 

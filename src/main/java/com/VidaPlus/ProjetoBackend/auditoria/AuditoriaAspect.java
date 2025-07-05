@@ -36,7 +36,7 @@ public class AuditoriaAspect {
 	public void logActivity(JoinPoint joinPoint) {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (authentication != null) ? authentication.getName() : "Usuario_não_logado";
+		String username = (authentication != null) ? authentication.getName() : "Sistema";
 
 		LogAuditoria log = new LogAuditoria();
 		log.setUsername(username);

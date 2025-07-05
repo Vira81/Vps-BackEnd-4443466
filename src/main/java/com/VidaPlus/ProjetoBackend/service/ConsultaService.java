@@ -163,6 +163,7 @@ public class ConsultaService {
 	 * Cria/Atualiza histórico do Paciente
 	 * TODO: Melhorar exception
 	 **/
+	@Transactional
 	public void realizarConsulta(Long consultaId, ProntuarioDto dto) {
 		// Consulta existe
 		ConsultaEntity consulta = existe.consulta(consultaId);

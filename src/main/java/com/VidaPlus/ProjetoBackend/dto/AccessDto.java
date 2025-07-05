@@ -1,11 +1,11 @@
 package com.VidaPlus.ProjetoBackend.dto;
 
-public class AcessDto {
+public class AccessDto {
 
 	private String token;
 
 
-	public AcessDto(String token) {
+	public AccessDto(String token) {
 		super();
 		this.token = token;
 	}

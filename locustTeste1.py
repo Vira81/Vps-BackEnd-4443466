@@ -38,14 +38,14 @@ class Usuario(HttpUser):
         self.headers = {"Authorization": self.token}
 
         # Atualiza dados pessoais
-        self.client.put("/dados_pessoais", json=dados_pess, headers=self.headers)
+        self.client.put("/minha_conta", json=dados_pess, headers=self.headers)
 
     @task
     def agendar_consulta(self):
         consulta = {
             "profissionalId": 1,
             "hospitalId": 1,
-            "dia": "2025-06-25",
+            "dia": "2025-07-04",
             "hora": "15:00"
         }
 

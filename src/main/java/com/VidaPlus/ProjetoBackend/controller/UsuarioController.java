@@ -97,7 +97,7 @@ public class UsuarioController {
 	 * 
 	 * PUT http://localhost:8080/usuarios/desativar-conta
 	 * 
-	 * TODO: Implementar a logica do login e logout
+	 * TODO: Implementar a logica do logout
 	 */
 	@PutMapping("/desativar-conta")
 	public ResponseEntity<String> desativar() {

@@ -13,7 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import com.VidaPlus.ProjetoBackend.dto.AcessDto;
+import com.VidaPlus.ProjetoBackend.dto.AccessDto;
 import com.VidaPlus.ProjetoBackend.dto.AuthenticationDto;
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 import com.VidaPlus.ProjetoBackend.entity.enums.StatusUsuario;
@@ -36,7 +36,7 @@ public class AuthService {
 	/**
 	 * Efetua o login e gera o token de acesso
 	 */
-	public AcessDto login(AuthenticationDto authDto) {
+	public AccessDto login(AuthenticationDto authDto) {
 	    try {
 	        UsernamePasswordAuthenticationToken userAuth =
 	                new UsernamePasswordAuthenticationToken(authDto.getUsername(), authDto.getPassword());
@@ -61,7 +61,7 @@ public class AuthService {
 	        usuarioRepository.save(usuario);
 	        String token = jwtUtils.generateTokenFromUserDetailsImpl(userAuthenticate);
 
-	        return new AcessDto(token);
+	        return new AccessDto(token);
 	    } catch (BadCredentialsException e) {
 	        logger.warn("Credenciais inválidas para o usuário: {}", authDto.getUsername());
 	        throw new AccessDeniedException("Login ou senha inválidos");

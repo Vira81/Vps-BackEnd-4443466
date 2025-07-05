@@ -37,8 +37,6 @@ import lombok.Setter;
 @Builder
 /**
  * Responsavel pelo login
- * OK: Criar um campo para a situação do usuario. (Ativo, Inativo, Pendente)
- * TODO: Ativação do login por email
  */
 
 public class UsuarioEntity {

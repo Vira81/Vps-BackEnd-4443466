@@ -86,7 +86,7 @@ public class UsuarioService {
 	 */
 	public ResponseEntity<?> atualizarSenha(SenhaAlterarDto dto) {
 
-		UsuarioEntity usuario = buscarId(login.getUsuarioLogado().getId());
+		UsuarioEntity usuario = login.getUsuarioLogado();
 		// Compara a senha atual com a senha informada
 		if (passwordEncoder.matches(dto.getSenha(), usuario.getSenhaHash())) {
 			usuario.setSenhaHash(passwordEncoder.encode(dto.getNovaSenha()));
@@ -104,7 +104,7 @@ public class UsuarioService {
 	 * TODO: Desativar Token
 	 */
 	public void desativarUsuario() {
-		UsuarioEntity usuario = buscarId(login.getUsuarioLogado().getId());
+		UsuarioEntity usuario = login.getUsuarioLogado();
 		usuario.setStatus(StatusUsuario.INATIVO);
 	}
 	

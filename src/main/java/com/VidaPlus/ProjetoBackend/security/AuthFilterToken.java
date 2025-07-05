@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Validação do token
- * TODO: No momento o token funciona corretamente. Realizar mais testes em token invalidos, expirados, etc.
  */
 public class AuthFilterToken extends OncePerRequestFilter {
 

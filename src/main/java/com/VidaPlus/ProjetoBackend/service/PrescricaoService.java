@@ -23,8 +23,7 @@ public class PrescricaoService {
 	/**
 	 * Cria a prescrição. (Opcional)
 	 * 
-	 * TODO: Adicionar uma checagem para permitir que a prescrição seja criada
-	 * somente em consulta marcadas como Realizada
+	
 	 **/
 	public void gerarPrescricao(ConsultaEntity consulta, PrescricaoDto dto) {
 		if (consulta.getStatusConsulta() != ConsultaStatus.REALIZADA) {

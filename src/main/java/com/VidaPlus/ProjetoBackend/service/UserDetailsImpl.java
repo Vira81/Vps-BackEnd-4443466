@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.VidaPlus.ProjetoBackend.entity.UsuarioEntity;
 
+@SuppressWarnings("serial")
 public class UserDetailsImpl implements UserDetails {
 
     private final UsuarioEntity usuario;

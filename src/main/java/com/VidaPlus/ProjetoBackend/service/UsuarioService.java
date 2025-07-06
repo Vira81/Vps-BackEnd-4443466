@@ -106,6 +106,7 @@ public class UsuarioService {
 	public void desativarUsuario() {
 		UsuarioEntity usuario = login.getUsuarioLogado();
 		usuario.setStatus(StatusUsuario.INATIVO);
+		usuarioRepository.save(usuario);
 	}
 	
 	// TODO: Desativar o Token, quando o usuario sair

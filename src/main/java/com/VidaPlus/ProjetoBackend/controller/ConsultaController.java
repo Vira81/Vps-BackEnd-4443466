@@ -172,7 +172,7 @@ public class ConsultaController {
 	/**
 	 * Admin cria a consulta com um profissional e um paciente
 	 * 
-	 * POST http://localhost:8080/consulta/nova_consulta_profissional 
+	 * POST http://localhost:8080/consulta/nova_consulta_admin 
 	 * {"profissionalId": 1,
 	 * "pacienteId": 3, "hospitalId": 1, "dia": "2025-06-23", "hora": "14:07:00",
 	 * "valor": 1300.0 }
